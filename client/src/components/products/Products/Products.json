@@ -1,0 +1,381 @@
+[
+    {
+        "id" : 1,
+        "name" : "Enamel Mug",
+        "top" :1,
+        "brand" : 
+            {   "id" : 3,
+                "name" : "Etsy Gifts"
+            }
+        ,
+        "categories" : 
+            {
+                "id" : 1,
+                "name" : "Mugs"
+            }
+        ,
+        "price": "20.00",
+        "status":"New",
+        "desc" : ["This personalized enamel - leather mug is the perfect gift for nature, camping, travel and coffee lovers! Very good choice as a gift!","Enamel mug is covered with genuine leather."],
+        "images":[
+            {"id": "1", "name": "pic1", "use": "desc" , "path": "/data/EtsyGifts/Mugs/Enamel-Mug/1.webp"},
+            {"id": "2", "name": "pic2", "use": "desc" , "path": "/data/EtsyGifts/Mugs/Enamel-Mug/2.webp"},
+            {"id": "3", "name": "pic3", "use": "desc" , "path": "/data/EtsyGifts/Mugs/Enamel-Mug/3.webp"},
+            {"id": "4", "name": "pic4", "use": "desc" , "path": "/data/EtsyGifts/Mugs/Enamel-Mug/4.webp"}
+        ],
+        "detail" :[
+            "Handmade",
+            "Materials: Enamel, Genuine Leather, Brass Studs, Waxed Rope",
+            "Capacity: 12 fluid ounces",
+            "Enamel mug is covered with genuine leather."
+        ],
+        "files":"/data/EtsyGifts/Mugs/Enamel-Mug/Enamel-Mug.docx"
+    },
+    {
+        "id" : 2,
+        "name" : "Coffee Mug",
+        "top" :1,
+        "brand" : 
+            {   "id" : 3,
+                "name" : "Etsy Gifts"
+            }
+        ,
+        "categories" : 
+            {
+                "id" : 1,
+                "name" : "Mugs"
+            }
+        ,
+        "price": "6.00",
+        "status":"New",
+        "desc" : ["Unleash your creativity with this incredible mockup designed specifically for the 6 oz white coffee mug.","Whether you're a seasoned designer or just starting out, this versatile product mock-up is perfect for showcasing your designs."],
+        "images":[
+            {"id": "1", "name": "pic1", "use": "desc" , "path": "/data/EtsyGifts/Mugs/Coffee-Mug/1.webp"},
+            {"id": "2", "name": "pic2", "use": "desc" , "path": "/data/EtsyGifts/Mugs/Coffee-Mug/2.webp"},
+            {"id": "3", "name": "pic3", "use": "desc" , "path": "/data/EtsyGifts/Mugs/Coffee-Mug/3.webp"},
+            {"id": "4", "name": "pic4", "use": "desc" , "path": "/data/EtsyGifts/Mugs/Coffee-Mug/4.webp"}
+        ],
+        "detail" : [
+            "Handmade",
+            "Dimensions: height 4.3 inches, diameter 2.8 inches",
+            "8 oz stainless steel water tumbler with label craftsmanship, simple and beautiful."
+        ]
+        ,    
+        "files":"/data/EtsyGifts/Mugs/Coffee-Mug/Coffee-Mug.docx"
+    },
+    {
+        "id" : 3,
+        "name" : "Bookshelf Mug",
+        "top" :1,
+        "brand" : 
+            {   "id" : 3,
+                "name" : "Etsy Gifts"
+            }
+        ,
+        "categories" : 
+            {
+                "id" : 1,
+                "name" : "Mugs"
+            }
+        ,
+        "price": "2.50",
+        "status":"New",
+        "desc" : ["Unleash your creativity with this incredible mockup designed specifically for the 6 oz white coffee mug.","Whether you're a seasoned designer or just starting out, this versatile product mock-up is perfect for showcasing your designs."],
+        "images":[
+            {"id": "1", "name": "pic1", "use": "desc" , "path": "/data/EtsyGifts/Mugs/Bookshelf-Mug/1.webp"},
+            {"id": "2", "name": "pic2", "use": "desc" , "path": "/data/EtsyGifts/Mugs/Bookshelf-Mug/2.webp"},
+            {"id": "3", "name": "pic3", "use": "desc" , "path": "/data/EtsyGifts/Mugs/Bookshelf-Mug/3.webp"},
+            {"id": "4", "name": "pic4", "use": "desc" , "path": "/data/EtsyGifts/Mugs/Bookshelf-Mug/4.webp"}
+        ],
+        "detail" : [
+            "Handmade",
+            "3D Book Mug Wrap",
+            "Dimensions: height 4.3 inches, diameter 2.8 inches"
+        ],
+        "files":"/data/EtsyGifts/Mugs/Bookshelf-Mug/Bookshelf-Mug.docx"
+    },
+    {
+        "id" : 4,
+        "name" : "Birthday Card",
+        "top" :1,
+        "brand" : 
+            {   "id" : 3,
+                "name" : "Etsy Gifts"
+            }
+        ,
+        "categories" : 
+            {
+                "id" : 3,
+                "name" : "Cards"
+            }
+        ,
+        "price": "6.50",
+        "status":"New",
+        "desc" : ["This cute cat birthday card is the best way to express love to someone whose love language is cat memes! A fun and unique birthday card to remind your favourite person that they are loved","Designed and made by Mona Mauve "],
+        "images":[
+            {"id": "1", "name": "pic1", "use": "desc" , "path": "/data/EtsyGifts/Cards/Birthday-Card/1.avif"},
+            {"id": "2", "name": "pic2", "use": "desc" , "path": "/data/EtsyGifts/Cards/Birthday-Card/2.avif"},
+            {"id": "3", "name": "pic3", "use": "desc" , "path": "/data/EtsyGifts/Cards/Birthday-Card/3.avif"},
+            {"id": "4", "name": "pic4", "use": "desc" , "path": "/data/EtsyGifts/Cards/Birthday-Card/4.avif"}
+        ],
+        "detail" : [
+            "Handmade",
+            "Comes with a kraft envelope and a free sticker.",
+            "A6 (small) = 5.8 x 4.1 in = 148 x 105 mm"
+        ],
+        "files":"/data/EtsyGifts/Cards/Birthday-Card/Birthday-Card.docx"
+    },
+    {
+        "id" : 5,
+        "name" : "Business Card",
+        "top" :1,
+        "brand" : 
+            {   "id" : 3,
+                "name" : "Etsy Gifts"
+            }
+        ,
+        "categories" : 
+            {
+                "id" : 3,
+                "name" : "Cards"
+            }
+        ,
+        "price": "1.80",
+        "status":"New",
+        "desc" : ["This business card template features a modern and eye-catching design that will make a lasting impression on potential clients. ","This business card contains all your photography business essential information and your customised QR code will send your clients and potential clients directly to your instagram when scanned."],
+        "images":[
+            {"id": "1", "name": "pic1", "use": "desc" , "path": "/data/EtsyGifts/Cards/Business-Card/1.avif"},
+            {"id": "2", "name": "pic2", "use": "desc" , "path": "/data/EtsyGifts/Cards/Business-Card/2.avif"},
+            {"id": "3", "name": "pic3", "use": "desc" , "path": "/data/EtsyGifts/Cards/Business-Card/3.avif"},
+            {"id": "4", "name": "pic4", "use": "desc" , "path": "/data/EtsyGifts/Cards/Business-Card/4.avif"}
+        ],
+        "detail" : [
+            "Handmade",
+            "2-sides Business Card",
+            "3.5 x 2 inches"
+        ],           
+        "files":"/data/EtsyGifts/Cards/Business-Card/Business-Card.docx"
+    },
+    {
+        "id" : 6,
+        "name" : "Greeting Card",
+        "top" :1,
+        "brand" : 
+            {   "id" : 3,
+                "name" : "Etsy Gifts"
+            }
+        ,
+        "categories" : 
+            {
+                "id" : 3,
+                "name" : "Cards"
+            }
+        ,
+        "price": "5.50",
+        "status":"New",
+        "desc" : ["The frog is considered to bring good luck, representing good things returning.","A contemporary romantic adaptation of a woodblock print from 1814 by Matsumoto Hoji."],
+        "images":[
+            {"id": "1", "name": "pic1", "use": "desc" , "path": "/data/EtsyGifts/Cards/Greeting-Card/1.avif"},
+            {"id": "2", "name": "pic2", "use": "desc" , "path": "/data/EtsyGifts/Cards/Greeting-Card/2.avif"},
+            {"id": "3", "name": "pic3", "use": "desc" , "path": "/data/EtsyGifts/Cards/Greeting-Card/3.avif"},
+            {"id": "4", "name": "pic4", "use": "desc" , "path": "/data/EtsyGifts/Cards/Greeting-Card/4.avif"}
+        ],
+        "detail" : [
+            "Handmade",
+            "A6 size (148mm x 105mm)",
+            "Blank inside",
+            "Produced in London"
+        ],
+        "files":"/data/EtsyGifts/Cards/Greeting-Card/Greeting-Card.docx"
+    },
+    {
+        "id" : 7,
+        "name" : "Strawberry Quartz Bracelet",
+        "top" :1,
+        "brand" : 
+            {   "id" : 3,
+                "name" : "Etsy Gifts"
+            }
+        ,
+        "categories" : 
+            {
+                "id" : 2,
+                "name" : "Bracelets"
+            }
+        ,
+        "price": "350.00",
+        "status":"New",
+        "desc" : ["Strawberry Quartz is a very powerful crystal, yet its energies are very gentle, loving, and supportive.","It is also known as the “Stone of Inner Love” for its ability to protect, nurture, and love."],
+        "images":[
+            {"id": "1", "name": "pic1", "use": "desc" , "path": "/data/EtsyGifts/Bracelets/Strawberry-Bracelet/1.jpg"},
+            {"id": "2", "name": "pic2", "use": "desc" , "path": "/data/EtsyGifts/Bracelets/Strawberry-Bracelet/2.jpg"},
+            {"id": "3", "name": "pic3", "use": "desc" , "path": "/data/EtsyGifts/Bracelets/Strawberry-Bracelet/3.jpg"},
+            {"id": "4", "name": "pic4", "use": "desc" , "path": "/data/EtsyGifts/Bracelets/Strawberry-Bracelet/4.jpg"}
+        ],
+        "detail" : [
+            "Handmade item",
+            "Materials: Silver",
+            "Style: Victorian",
+            "Made to Order"
+        ],
+        "files":"/data/EtsyGifts/Bracelets/Strawberry-Bracelet/Strawberry-Bracelet.docx"
+    },
+    {
+        "id" : 8,
+        "name" : "Flower Bracelet",
+        "top" :1,
+        "brand" : 
+            {   "id" : 3,
+                "name" : "Etsy Gifts"
+            }
+        ,
+        "categories" : 
+            {
+                "id" : 2,
+                "name" : "Bracelets"
+            }
+        ,
+        "price": "12.00",
+        "status":"New",
+        "desc" : ["Our Beaded Flower Bracelet is handmade using gold , colour coloured seed beads and 3mm rondelle crystal beads.","Thread may be visible as it is a handmade product."],
+        "images":[
+            {"id": "1", "name": "pic1", "use": "desc" , "path": "/data/EtsyGifts/Bracelets/Flower-Bracelet/1.avif"},
+            {"id": "2", "name": "pic2", "use": "desc" , "path": "/data/EtsyGifts/Bracelets/Flower-Bracelet/2.avif"},
+            {"id": "3", "name": "pic3", "use": "desc" , "path": "/data/EtsyGifts/Bracelets/Flower-Bracelet/3.avif"},
+            {"id": "4", "name": "pic4", "use": "desc" , "path": "/data/EtsyGifts/Bracelets/Flower-Bracelet/4.avif"}
+        ],
+        "detail" : [
+            "Handmade item",
+            "Length: 6.5 inches with 2 inch extension chain (altogether 8.5 inches)",
+            "Made to Order"
+        ],
+        "files":"/data/EtsyGifts/Bracelets/Flower-Bracelet/Flower-Bracelet/docx"
+    },
+    {
+        "id" : 9,
+        "name" : "Birthstone Bracelet",
+        "top" :1,
+        "brand" : 
+            {   "id" : 3,
+                "name" : "Etsy Gifts"
+            }
+        ,
+        "categories" : 
+            {
+                "id" : 2,
+                "name" : "Bracelets"
+            }
+        ,
+        "price": "19.25",
+        "status":"New",
+        "desc" : ["Our Initial & Birthstone bracelet is simply beautiful and has a classic style.","This bracelet is great for casual wear, and has a fashionable design."],
+        "images":[
+            {"id": "1", "name": "pic1", "use": "desc" , "path": "/data/EtsyGifts/Bracelets/Birthstone-Bracelet/1.avif"},
+            {"id": "2", "name": "pic2", "use": "desc" , "path": "/data/EtsyGifts/Bracelets/Birthstone-Bracelet/2.avif"},
+            {"id": "3", "name": "pic3", "use": "desc" , "path": "/data/EtsyGifts/Bracelets/Birthstone-Bracelet/3.avif"},
+            {"id": "4", "name": "pic4", "use": "desc" , "path": "/data/EtsyGifts/Bracelets/Birthstone-Bracelet/4.avif"}
+        ],
+        "detail" : [
+            "Handmade item",
+            "Gemstone: Cubic zirconia",
+            "Style: Minimalist",
+            "Can be personalized"
+        ],
+        "files":"/data/EtsyGifts/Bracelets/Birthstone-Bracelet/Birthstone-Bracelet.docx"
+    },
+    {
+        "id" : 10,
+        "name" : "Teddy Bear Flying Rainbow Balloons",
+        "top" :1,
+        "brand" : 
+            {   "id" : 3,
+                "name" : "Etsy Gifts"
+            }
+        ,
+        "categories" : 
+            {
+                "id" : 4,
+                "name" : "Balloons"
+            }
+        ,
+        "price": "120.00",
+        "status":"New",
+        "desc" : ["Neutral baby mobile featuring a little bear flying balloons in pastel rainbow colors, surrounded by clouds with a rainbow bunting banner.","This adorable neutral gender baby mobile will capture everyone's attention and would make the cutest addition to any nursery decor."],
+        "images":[
+            {"id": "1", "name": "pic1", "use": "desc" , "path": "/data/EtsyGifts/Balloons/Teddy-Balloon/1.avif"},
+            {"id": "2", "name": "pic2", "use": "desc" , "path": "/data/EtsyGifts/Balloons/Teddy-Balloon/2.jpg"},
+            {"id": "3", "name": "pic3", "use": "desc" , "path": "/data/EtsyGifts/Balloons/Teddy-Balloon/3.avif"},
+            {"id": "4", "name": "pic4", "use": "desc" , "path": "/data/EtsyGifts/Balloons/Teddy-Balloon/4.jpg"}
+        ],
+        "detail" : [
+            "Handmade item",
+            "Materials: 100 percent wool felt",
+            "Bear: approx 4.3 inches in height (10,5 cm)"
+        ],
+        "files":"/data/EtsyGifts/Balloons/Teddy-Balloon/Teddy-Balloon.docx"
+    },
+    {
+        "id" : 11,
+        "name" : "Rainbow Foil Balloon",
+        "top" :1,
+        "brand" : 
+            {   "id" : 3,
+                "name" : "Etsy Gifts"
+            }
+        ,
+        "categories" : 
+            {
+                "id" : 4,
+                "name" : "Balloons"
+            }
+        ,
+        "price": "2.75",
+        "status":"New",
+        "desc" : ["This graphics pack contains 42 individual elements: capital letters, numbers, shapes and confetti in iridescent pastel rainbow foil.","Use them to design your own invitations, party props, web decor, or any of your creative projects!"],
+        "images":[
+            {"id": "1", "name": "pic1", "use": "desc" , "path": "/data/EtsyGifts/Balloons/Rainbow-Balloon/1.avif"},
+            {"id": "2", "name": "pic2", "use": "desc" , "path": "/data/EtsyGifts/Balloons/Rainbow-Balloon/2.avif"},
+            {"id": "3", "name": "pic3", "use": "desc" , "path": "/data/EtsyGifts/Balloons/Rainbow-Balloon/3.avif"},
+            {"id": "4", "name": "pic4", "use": "desc" , "path": "/data/EtsyGifts/Balloons/Rainbow-Balloon/4.avif"}
+        ],
+        "detail" : [
+            "Handmade",
+            "More colors available! ",
+            "They will stand out beautifully against dark or light backgrounds."
+        ],
+        "files":"/data/EtsyGifts/Balloons/Rainbow-Balloon/Rainbow-Balloon.docx"
+    },
+    {
+        "id" : 12,
+        "name" : "Porcelain Balloon",
+        "top" :1,
+        "brand" : 
+            {   "id" : 3,
+                "name" : "Etsy Gifts"
+            }
+        ,
+        "categories" : 
+            {
+                "id" : 4,
+                "name" : "Balloons"
+            }
+        ,
+        "price": "70.00",
+        "status":"New",
+        "desc" : ["These porcelain balloons have been designed, moulded and cast from start to finish by RMC Ceramics - they are totally unique and cannot be purchased anywhere else.","With lights inside the translucent ballooons glow beautifully."],
+        "images":[
+            {"id": "1", "name": "pic1", "use": "desc" , "path": "/data/EtsyGifts/Balloons/Porcelain-Balloon/1.avif"},
+            {"id": "2", "name": "pic2", "use": "desc" , "path": "/data/EtsyGifts/Balloons/Porcelain-Balloon/2.jpg"},
+            {"id": "3", "name": "pic3", "use": "desc" , "path": "/data/EtsyGifts/Balloons/Porcelain-Balloon/3.jpg"},
+            {"id": "4", "name": "pic4", "use": "desc" , "path": "/data/EtsyGifts/Balloons/Porcelain-Balloon/4.jpg"}
+        ],
+        "detail" : [
+            "Handmade item",
+            "Weight (lbs): 1.2 lbs (Hollow inside)",
+            "Size (inches): Length: 6.7 in x Width: 5.1 in x Depth: 5.5 in",
+            "Colours available are Red, Blue, Yellow, Green, Pink, Baby Blue and Grey."
+
+        ],
+        "files":"/data/EtsyGifts/Balloons/Porcelain-Balloon/Porcelain-Balloon.docx"
+    }
+]

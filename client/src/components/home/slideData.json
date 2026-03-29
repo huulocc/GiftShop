@@ -1,0 +1,22 @@
+[
+    { "id": 1,
+      "image":"/images/image_slide_1.webp",
+      "title": "High-quality furniture",
+      "content": "We provide quality products at an affordable price."
+      },
+    { "id": 2,
+      "image":"/images/image_slide_2.webp",
+      "title": "Sophistication in simplicity",
+      "content": "The beauty of simplicity but meticulousness in every detail. "
+      },
+    { "id": 3,
+      "image":"/images/image_slide_3.webp",
+      "title": "Sharp in every detail",
+      "content": "We provide quality products at an affordable price."
+      },
+      { "id": 4,
+      "image":"/images/image_slide_4.webp",
+      "title": "Sharp in every detail",
+      "content": "We provide quality products at an affordable price."
+      }
+]

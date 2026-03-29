@@ -1,0 +1,23 @@
+[
+    {
+        "id": 1,
+        "name":"Mugs",
+        "path":"products/1"
+
+    },
+    {
+        "id": 2,
+        "name":"Bracelets",
+        "path":"products/2"
+    },
+    {
+        "id": 3,
+        "name":"Cards",
+        "path":"products/3"
+    },
+    {
+        "id": 4,
+        "name":"Balloons",
+        "path":"products/4"
+    }
+]

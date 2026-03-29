@@ -1,0 +1,17 @@
+.logo-main {
+    margin: 0px 0px;
+    height: 8vmin ;
+    &-logo{
+        height: 7vmin;
+        width: auto;
+    }
+    a {
+        text-decoration: none;
+    }
+    &-title{
+        margin: 5px;
+        font-weight: 600;
+        color: gray;
+        font-size: calc(14px + 1vmin);
+    }
+}

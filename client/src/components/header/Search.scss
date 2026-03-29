@@ -1,0 +1,39 @@
+@import '../../styles/VariableStyle.scss';
+$seach-color-main:#f0f2f5;
+.search{
+    width: auto;
+    
+    
+    .input-style{
+        height: 30px;
+        width: 50%;
+        border-radius: 15px 15px 15px 15px ;
+        border: solid 1px #ebebebea;
+        background-color: #e0e0e094 ;
+        margin: 10px;
+        padding: 0px 10px 0px 10px;
+        font-family: 'Roboto', sans-serif;
+        font-size: 16px;
+        color: $text-color-bar;
+        &:focus{
+            outline-color :#40569f ;
+        }
+    }
+    .button-style{
+        height: 30px;
+        border-radius: 15px 15px 15px 15px ;
+        font-family: 'Roboto', sans-serif;
+        border: solid 1px #ebebebea;
+        background-color: #e0e0e094;
+        margin: 10px;
+        padding: 4px;
+        color: $text-color-bar-main;
+        font-size: 16px;
+        
+        a{
+            color: $text-color-bar-main;
+            text-decoration: none;
+        }
+    }
+    
+}

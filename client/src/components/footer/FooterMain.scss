@@ -1,0 +1,122 @@
+* {
+    list-style: none
+}
+.footer{
+    height: max-content;
+    font-family: 'Roboto', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    background-color: #e6e6e6;
+    margin: auto;
+    padding: 10px;
+    color: rgb(107, 107, 107);
+    list-style: none;
+    p{
+        margin: 0px;
+    }
+    h4{
+        margin: 10px 0px;
+    }
+    &-title{
+        margin-left: 20px;
+        text-align: left;
+        padding: 10px;
+        &-logo{
+            height: 5vh;
+            width: auto;
+        }
+        
+    }
+    &-content{
+        display: flex;
+        flex-direction: row;
+        margin-left: 40px;
+
+        &-left{
+            display: flex;
+            flex-direction: column;
+            flex: 3;
+            margin: 0px;
+            padding-top: 3px;
+            &-url{
+                font-size: 14px;
+                color: rgb(107, 107, 107);
+                text-decoration: none;
+                width: fit-content;
+            }
+        }
+        &-center{
+            display: flex;
+            flex-direction: column;
+            flex: 3;
+            margin: 0px;
+            padding-top: 3px;
+            &-url{
+                font-size: 14px;
+                color: rgb(107, 107, 107);
+                text-decoration: none;
+                width: fit-content;
+            }
+        }
+        &-right{
+            display: flex;
+            flex-direction: column;
+            flex: 3;
+            margin: 0px;
+            padding-top: 3px;
+            &-url{
+                font-size: 14px;
+                color: rgb(107, 107, 107);
+                text-decoration: none;
+                width: fit-content;
+            }
+        }
+        &-contact{
+            display: flex;
+            flex-direction: column;
+            flex: 3;
+            margin-top : 10px;
+            padding-top: 3px;
+            font-size: 14px;
+        }
+
+    }
+    &-social{
+        color: rgb(107, 107, 107);
+        margin-left: 20px;
+        padding-right: 20px;
+        &-title{
+            width: 100%;
+        }
+        display: flex;
+        flex-wrap: wrap;
+        &-contact{
+            display: flex;
+            flex-direction: row;
+            margin-right: 10px;
+            
+            &-url{
+                text-decoration: none;
+                color: rgb(107, 107, 107);
+                
+            }
+            &-img{
+            height: 20px;
+            padding: 5px 5px 0px 5px;
+            }
+        }
+        
+    }
+    &-copyright{
+        text-align: center;
+        p{
+            text-align: center;
+            font-size: 14px;
+        }
+    }
+}
+@media (max-Width:768px){
+    .footer-content{
+        flex-wrap: wrap;
+    }
+}

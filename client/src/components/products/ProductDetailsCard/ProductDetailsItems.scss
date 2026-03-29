@@ -1,0 +1,105 @@
+.productdetails{
+    min-width: 17rem;
+    min-height: 29rem;
+    background-color: rgb(255, 255, 255);
+    border-radius: 7px;
+    margin: 3px;
+    &-avatar{
+        width: 100%;
+        min-height: 17rem;
+        overflow: hidden;
+        position: relative;
+        &-flag{
+            position: absolute;
+            top: 30px;
+            left: 0px;
+            background-color: rgba(235, 234, 234, 0.86);
+            width: 50px;
+            height: 24px;
+            border-radius: 0px 3px 3px 0px;
+            &-text{
+                font-weight: 600;
+               
+            }
+        }
+        &-img{
+            width: 314px;
+            height: 314px;
+            object-fit: cover;
+            border-radius: 7px 7px 0px 0px;
+        }
+    }
+    &-content{
+        margin: 10px;
+        padding: 0px;
+        border-radius: 7px;
+        background-color: rgb(225, 225, 225);
+        text-align: left;
+        &-h3{
+            margin: 3px;
+        }
+        &-h4{
+            margin: 3px;
+        }
+        &-h5{
+            margin: 3px;
+            font-weight: 500;
+        }
+        &-color{
+            margin: 3px;
+        }
+        &-rating{
+            margin: 3px;
+        }
+    }
+    &-button{
+        height: 42px;
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+       
+        a{
+            text-decoration: none;
+            
+        }
+        :hover{
+            color: #ffffff;
+            background-color: #59bfd3df;
+        }
+        &-details{
+            height: 28px;
+            margin: 5px;
+            border-radius: 14px;
+            border: 0px solid #fff;
+            font-weight: 600;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        &-addToCart{
+            height: 28px;
+            margin: 5px;
+            border-radius: 14px;
+            border: 0px solid #fff;
+            font-weight: 600;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        &-p{
+            font-size: 14px;
+            font-weight: 600;
+            display:contents;
+            
+        }
+        &-icon{
+            margin: 3px;
+            width: 18px;
+            height: 18px;
+        }
+    }
+}

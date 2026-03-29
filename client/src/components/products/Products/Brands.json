@@ -1,0 +1,18 @@
+[
+    {
+        "id": 1,
+        "name":"Zazzle Gifts",
+        "path":"brands/1"
+
+    },
+    {
+        "id": 2,
+        "name":"Giftr Gifts",
+        "path":"brands/2"
+    },
+    {
+        "id": 3,
+        "name":"Etsy Gifts",
+        "path":"brands/3"
+    }
+]
