@@ -1,0 +1,42 @@
+.order-page {
+  min-height: calc(100vh - 200px);
+  background: #f7fafc;
+  padding-bottom: 2rem;
+}
+
+/* Tabs */
+.order-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.5rem 1rem 0;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.order-tab {
+  padding: 0.75rem 1.5rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #a0aec0;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin-bottom: -1px;
+}
+
+.order-tab:hover {
+  color: #667eea;
+}
+
+.order-tab.active {
+  color: #667eea;
+  border-bottom-color: #667eea;
+}
+
+/* Tab Content */
+.order-tab-content {
+  padding: 0;
+}
