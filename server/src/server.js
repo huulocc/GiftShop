@@ -1,7 +1,8 @@
+const path = require('path')
 const dotenv = require('dotenv')
 const app = require('./app')
 
-dotenv.config()
+dotenv.config({ path: path.join(__dirname, '..', '.env') })
 
 const PORT = process.env.PORT || 5000
 

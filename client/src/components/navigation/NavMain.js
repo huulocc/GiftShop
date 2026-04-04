@@ -60,6 +60,9 @@ export default function NavMain(){
                         <NavLink to="/contact" className={(navData) => (navData.isActive ? "active-style" : 'none')} style={{color: '#515151'}}>Contact</NavLink>
                     </li>
                     <li className="nav-main-ul-li">
+                        <NavLink to="/orders" className={(navData) => (navData.isActive ? "active-style" : 'none')} style={{color: '#515151'}}>Orders</NavLink>
+                    </li>
+                    <li className="nav-main-ul-li">
                         <NavLink to="/about-us" className={(navData) => (navData.isActive ? "active-style" : 'none')} style={{color: '#515151'}}>About Us</NavLink>
                     </li>
                     <li className="nav-main-ul-li">
