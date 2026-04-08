@@ -1,19 +1,56 @@
+@import '../../styles/VariableStyle.scss';
+
+/* ══════════════════════════════════════
+   ORDER ACTIONS
+══════════════════════════════════════ */
 .order-actions {
   display: flex;
   flex-direction: column;
+  gap: 0.625rem;
+  font-family: $font-base;
+}
+
+/* ── Feedback Messages ────────────────────────────────── */
+.action-error,
+.action-success {
+  display: flex;
+  align-items: center;
   gap: 0.5rem;
+  border-radius: $radius-sm;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.825rem;
+  font-weight: 500;
+  animation: slideDown 0.3s ease;
+
+  svg {
+    width: 0.95rem;
+    height: 0.95rem;
+    flex-shrink: 0;
+  }
 }
 
 .action-error {
-  background: #fff5f5;
-  border: 1px solid #fc8181;
-  border-radius: 6px;
-  padding: 0.5rem 0.75rem;
-  color: #c53030;
-  font-size: 0.85rem;
+  background: $danger-light;
+  border: 1px solid rgba($danger, 0.3);
+  color: $danger-dark;
+
+  svg { color: $danger; }
 }
 
-/* Action Buttons */
+.action-success {
+  background: $success-light;
+  border: 1px solid rgba($success, 0.3);
+  color: $success-dark;
+
+  svg { color: $success; }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Action Buttons ───────────────────────────────────── */
 .action-buttons {
   display: flex;
   gap: 0.5rem;
@@ -21,93 +58,138 @@
 }
 
 .btn-action {
-  padding: 0.5rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.475rem 0.875rem;
   border: none;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  border-radius: $radius-sm;
+  font-size: 0.825rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: $transition-base;
   white-space: nowrap;
+  font-family: $font-base;
+  min-width: 100px;
+  justify-content: center;
+
+  svg:not(.action-spinner) {
+    width: 0.875rem;
+    height: 0.875rem;
+    flex-shrink: 0;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+  }
 }
 
-.btn-action:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.action-spinner {
+  width: 0.875rem;
+  height: 0.875rem;
+  animation: spinAction 0.8s linear infinite;
+  flex-shrink: 0;
 }
 
+@keyframes spinAction {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Place Button ─────────────────────────────────────── */
 .btn-place {
-  background: linear-gradient(135deg, #48bb78, #38a169);
+  background: $gradient-success;
   color: #fff;
+  box-shadow: 0 2px 8px rgba($success, 0.25);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba($success, 0.4);
+  }
 }
 
-.btn-place:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 12px rgba(72, 187, 120, 0.4);
-}
-
+/* ── Cancel Button ────────────────────────────────────── */
 .btn-cancel {
-  background: linear-gradient(135deg, #fc8181, #e53e3e);
+  background: $gradient-danger;
   color: #fff;
+  box-shadow: 0 2px 8px rgba($danger, 0.25);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba($danger, 0.4);
+  }
 }
 
-.btn-cancel:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 12px rgba(229, 62, 62, 0.4);
-}
-
+/* ── Edit Button ──────────────────────────────────────── */
 .btn-edit {
-  background: linear-gradient(135deg, #667eea, #5a67d8);
-  color: #fff;
+  background: $bg-card;
+  color: $text-secondary;
+  border: 1.5px solid $border;
+
+  &:hover:not(:disabled) {
+    background: $primary-light;
+    border-color: $primary;
+    color: $primary;
+    transform: translateY(-1px);
+  }
+
+  &.active {
+    background: $primary-light;
+    border-color: $primary;
+    color: $primary;
+  }
 }
 
-.btn-edit:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 12px rgba(102, 126, 234, 0.4);
-}
-
-/* Edit Form */
+/* ── Edit Form ────────────────────────────────────────── */
 .edit-form {
-  background: #f7fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-md;
   padding: 1rem;
-  margin-bottom: 0.5rem;
+  animation: slideDown 0.3s ease;
+  border-top: 3px solid $primary;
 }
 
 .edit-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.875rem;
 }
 
 .edit-field {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-}
 
-.edit-field label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #718096;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
+  label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
 
-.edit-field input {
-  padding: 0.5rem 0.65rem;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 6px;
-  font-size: 0.88rem;
-  outline: none;
-  transition: border-color 0.2s ease;
-}
+  input {
+    padding: 0.5rem 0.65rem;
+    border: 1.5px solid $border;
+    border-radius: $radius-sm;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background: $bg-card;
+    color: $text-primary;
+    font-family: $font-base;
 
-.edit-field input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    &::placeholder { color: $text-muted; }
+
+    &:focus {
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
+    }
+  }
 }
 
 .edit-form-buttons {
@@ -115,24 +197,32 @@
   gap: 0.5rem;
 }
 
+/* Save Button */
 .btn-save {
-  background: linear-gradient(135deg, #48bb78, #38a169);
+  background: $gradient-success;
   color: #fff;
+  box-shadow: 0 2px 8px rgba($success, 0.2);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba($success, 0.35);
+  }
 }
 
-.btn-save:hover:not(:disabled) {
-  box-shadow: 0 3px 12px rgba(72, 187, 120, 0.3);
-}
-
+/* Cancel Edit Button */
 .btn-cancel-edit {
-  background: #edf2f7;
-  color: #4a5568;
+  background: $bg-card;
+  color: $text-secondary;
+  border: 1.5px solid $border;
+
+  &:hover:not(:disabled) {
+    background: $danger-light;
+    border-color: rgba($danger, 0.3);
+    color: $danger-dark;
+  }
 }
 
-.btn-cancel-edit:hover {
-  background: #e2e8f0;
-}
-
+/* ── Responsive ───────────────────────────────────────── */
 @media (max-width: 480px) {
   .edit-form-grid {
     grid-template-columns: 1fr;
@@ -140,5 +230,9 @@
 
   .action-buttons {
     flex-direction: column;
+  }
+
+  .btn-action {
+    width: 100%;
   }
 }

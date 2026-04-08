@@ -1,6 +1,86 @@
-$bgr-color-main: #f0f2f5;
-$bgr-color-main:  #666666;
-$text-color-bar:  #5c5c5c;
-$text-color-main: #65676b;
-$text-color-bar-main: #ffffff;
-$text-color-bar-main-sub: #6c6c6c;
+// ============================================================
+// GiftShop Design System — SCSS Variables & CSS Custom Props
+// ============================================================
+
+// ── Legacy aliases (used by header/nav components) ─────────
+$bgr-color-main:           #f0f2f5;
+$text-color-bar:           #5c5c5c;
+$text-color-main:          #65676b;
+$text-color-bar-main:      #ffffff;
+$text-color-bar-main-sub:  #6c6c6c;
+// ───────────────────────────────────────────────────────────
+
+// --- Brand Colors ---
+$primary:        #667eea;
+$primary-dark:   #5a67d8;
+$primary-light:  #eef2ff;
+$accent:         #764ba2;
+
+// --- Semantic Colors ---
+$success:        #48bb78;
+$success-light:  #f0fff4;
+$success-dark:   #276749;
+$warning:        #f6ad55;
+$warning-light:  #fffbeb;
+$warning-dark:   #975a16;
+$danger:         #fc8181;
+$danger-light:   #fff5f5;
+$danger-dark:    #9b2c2c;
+
+// --- Neutrals ---
+$text-primary:   #1a202c;
+$text-secondary: #4a5568;
+$text-muted:     #a0aec0;
+$border:         #e2e8f0;
+$border-light:   #edf2f7;
+$bg-page:        #f0f2ff;
+$bg-card:        #ffffff;
+$surface:        #f7f9ff;
+
+// --- Typography ---
+$font-base:      'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+$font-mono:      'JetBrains Mono', 'Courier New', monospace;
+
+// --- Shadows ---
+$shadow-sm:   0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+$shadow-md:   0 4px 16px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+$shadow-lg:   0 10px 40px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.06);
+$shadow-primary: 0 8px 24px rgba(102, 126, 234, 0.35);
+
+// --- Transitions ---
+$transition-fast:   all 0.15s ease;
+$transition-base:   all 0.25s ease;
+$transition-slow:   all 0.4s ease;
+
+// --- Border Radius ---
+$radius-sm:  6px;
+$radius-md:  10px;
+$radius-lg:  16px;
+$radius-xl:  24px;
+$radius-full: 9999px;
+
+// --- Gradients ---
+$gradient-primary: linear-gradient(135deg, $primary, $accent);
+$gradient-success: linear-gradient(135deg, $success, #38a169);
+$gradient-danger:  linear-gradient(135deg, $danger, #e53e3e);
+
+// --- CSS Custom Properties (for runtime use) ---
+:root {
+  --primary:        #{$primary};
+  --primary-dark:   #{$primary-dark};
+  --primary-light:  #{$primary-light};
+  --accent:         #{$accent};
+  --success:        #{$success};
+  --warning:        #{$warning};
+  --danger:         #{$danger};
+  --text-primary:   #{$text-primary};
+  --text-secondary: #{$text-secondary};
+  --text-muted:     #{$text-muted};
+  --border:         #{$border};
+  --bg-page:        #{$bg-page};
+  --bg-card:        #{$bg-card};
+  --surface:        #{$surface};
+  --shadow-md:      #{$shadow-md};
+  --radius-md:      #{$radius-md};
+  --gradient-primary: #{$gradient-primary};
+}

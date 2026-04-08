@@ -1,43 +1,81 @@
+@import '../../styles/VariableStyle.scss';
+
+/* ══════════════════════════════════════
+   ORDER LIST
+══════════════════════════════════════ */
 .order-list-container {
-  max-width: 960px;
+  max-width: 1060px;
   margin: 2rem auto;
   padding: 0 1.5rem;
+  font-family: $font-base;
 }
 
+/* ── Header ───────────────────────────────────────────── */
 .order-list-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.order-list-title-group {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
 }
 
 .order-list-title {
-  font-size: 1.75rem;
-  color: #2d3436;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $text-primary;
+  letter-spacing: -0.02em;
+}
+
+.order-list-count {
+  font-size: 0.825rem;
+  color: $text-muted;
+  font-weight: 500;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-full;
+  padding: 0.2rem 0.6rem;
 }
 
 .btn-refresh {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   padding: 0.5rem 1rem;
-  background: #eef2ff;
-  color: #667eea;
-  border: 1.5px solid #c3dafe;
-  border-radius: 8px;
-  font-size: 0.88rem;
+  background: $bg-card;
+  color: $primary;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: $transition-base;
+  font-family: $font-base;
+
+  svg {
+    width: 0.9rem;
+    height: 0.9rem;
+    transition: transform 0.5s ease;
+  }
+
+  &:hover {
+    background: $primary-light;
+    border-color: $primary;
+    color: $primary-dark;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+
+    svg {
+      transform: rotate(180deg);
+    }
+  }
 }
 
-.btn-refresh:hover {
-  background: #e0e7ff;
-  border-color: #667eea;
-  transform: translateY(-1px);
-}
-
-/* Status Filters */
+/* ── Status Filters (Segmented Control) ───────────────── */
 .status-filters {
   display: flex;
   gap: 0.5rem;
@@ -46,97 +84,218 @@
 }
 
 .filter-btn {
-  padding: 0.5rem 1rem;
-  background: #f7fafc;
-  color: #4a5568;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 20px;
-  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.9rem;
+  background: $bg-card;
+  color: $text-secondary;
+  border: 1.5px solid $border;
+  border-radius: $radius-full;
+  font-size: 0.84rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: $transition-base;
+  font-family: $font-base;
+
+  .filter-btn-icon {
+    display: flex;
+    align-items: center;
+
+    svg {
+      width: 0.85rem;
+      height: 0.85rem;
+    }
+  }
+
+  .filter-btn-badge {
+    background: $border-light;
+    color: $text-muted;
+    border-radius: $radius-full;
+    padding: 0.1rem 0.45rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    min-width: 1.25rem;
+    text-align: center;
+    transition: $transition-fast;
+  }
+
+  &:hover {
+    background: $primary-light;
+    border-color: $primary;
+    color: $primary;
+
+    .filter-btn-badge {
+      background: rgba(102, 126, 234, 0.15);
+      color: $primary-dark;
+    }
+  }
+
+  &.active {
+    background: $gradient-primary;
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 4px 14px rgba(102, 126, 234, 0.35);
+
+    .filter-btn-badge {
+      background: rgba(255, 255, 255, 0.25);
+      color: #fff;
+    }
+  }
 }
 
-.filter-btn:hover {
-  background: #eef2ff;
-  border-color: #667eea;
-  color: #667eea;
-}
-
-.filter-btn.active {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: #fff;
-  border-color: transparent;
-}
-
-/* Error */
+/* ── Error ────────────────────────────────────────────── */
 .order-list-error {
-  background: #fff5f5;
-  border: 1px solid #fc8181;
-  border-radius: 10px;
-  padding: 1rem 1.25rem;
-  color: #c53030;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: $danger-light;
+  border: 1px solid rgba($danger, 0.4);
+  border-radius: $radius-md;
+  padding: 0.875rem 1.125rem;
+  color: $danger-dark;
   margin-bottom: 1.25rem;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
+    color: $danger;
+  }
 }
 
-/* Loading */
+/* ── Skeleton Loading Cards ───────────────────────────── */
 .order-list-loading {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 3rem 0;
-  color: #a0aec0;
   gap: 1rem;
 }
 
-.spinner {
-  width: 36px;
-  height: 36px;
-  border: 3px solid #e2e8f0;
-  border-top-color: #667eea;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+.skeleton-card {
+  background: $bg-card;
+  border-radius: $radius-lg;
+  border: 1px solid $border;
+  overflow: hidden;
+  animation: pulse 1.5s ease-in-out infinite;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.skeleton-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: $surface;
+  border-bottom: 1px solid $border-light;
 }
 
-/* Empty State */
+.skeleton-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skeleton-line {
+  height: 0.875rem;
+  background: linear-gradient(90deg, $border-light 25%, darken($border-light, 3%) 50%, $border-light 75%);
+  background-size: 200% 100%;
+  border-radius: $radius-sm;
+  animation: shimmer 1.6s infinite;
+  width: 100%;
+
+  &--short { width: 40%; }
+  &--medium { width: 65%; }
+}
+
+.skeleton-badge {
+  width: 80px;
+  height: 1.5rem;
+  background: $border-light;
+  border-radius: $radius-full;
+  animation: shimmer 1.6s infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.7; }
+}
+
+/* ── Empty State ──────────────────────────────────────── */
 .order-list-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4rem 1rem;
   text-align: center;
-  padding: 3rem 1rem;
-  color: #a0aec0;
 }
 
-.empty-icon {
-  font-size: 3rem;
-  display: block;
-  margin-bottom: 0.75rem;
+.empty-illustration {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 1.5rem;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
 }
 
-.order-list-empty p {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #718096;
-  margin-bottom: 0.25rem;
+.empty-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: $text-secondary;
 }
 
 .empty-hint {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  color: $text-muted;
 }
 
-/* List */
+/* ── Order List Grid ──────────────────────────────────── */
 .order-list {
   display: flex;
   flex-direction: column;
+  gap: 0;
 }
 
-/* Pagination */
+/* ── Pagination ───────────────────────────────────────── */
 .order-list-pagination {
   text-align: center;
-  padding: 1rem;
-  color: #a0aec0;
+  padding: 1.5rem 1rem 0.5rem;
+  color: $text-muted;
   font-size: 0.85rem;
+
+  strong {
+    color: $text-secondary;
+    font-weight: 600;
+  }
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 640px) {
+  .order-list-container {
+    padding: 0 1rem;
+    margin: 1.5rem auto;
+  }
+
+  .order-list-title {
+    font-size: 1.25rem;
+  }
+
+  .status-filters {
+    gap: 0.4rem;
+  }
+
+  .filter-btn {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.8rem;
+  }
 }
