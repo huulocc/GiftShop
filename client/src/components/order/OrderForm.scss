@@ -458,10 +458,7 @@
   font-weight: 800;
   font-size: 1.05rem;
   text-align: right;
-  background: $gradient-primary;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: $primary;
   font-family: $font-mono;
 }
 
@@ -704,7 +701,7 @@
   gap: 0.6rem;
   width: 100%;
   padding: 1rem;
-  background: $gradient-primary;
+  background: #1a1a2e;
   color: #fff;
   border: none;
   border-radius: $radius-md;
@@ -780,7 +777,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 1rem 1.25rem;
-  background: $gradient-primary;
+  background: #1a1a2e;
 
   svg {
     width: 1rem;
@@ -897,10 +894,7 @@
 .sidebar-total {
   font-size: 1.25rem;
   font-weight: 800;
-  background: $gradient-primary;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: $primary;
   font-family: $font-mono;
 }
 

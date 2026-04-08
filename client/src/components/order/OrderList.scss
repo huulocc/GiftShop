@@ -132,13 +132,12 @@
   }
 
   &.active {
-    background: $gradient-primary;
+    background: #1a1a2e;
     color: #fff;
     border-color: transparent;
-    box-shadow: 0 4px 14px rgba(102, 126, 234, 0.35);
 
     .filter-btn-badge {
-      background: rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.2);
       color: #fff;
     }
   }
