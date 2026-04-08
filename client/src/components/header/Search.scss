@@ -1,39 +1,64 @@
 @import '../../styles/VariableStyle.scss';
-$seach-color-main:#f0f2f5;
-.search{
-    width: auto;
-    
-    
-    .input-style{
-        height: 30px;
-        width: 50%;
-        border-radius: 15px 15px 15px 15px ;
-        border: solid 1px #ebebebea;
-        background-color: #e0e0e094 ;
-        margin: 10px;
-        padding: 0px 10px 0px 10px;
-        font-family: 'Roboto', sans-serif;
-        font-size: 16px;
-        color: $text-color-bar;
-        &:focus{
-            outline-color :#40569f ;
-        }
+
+.search {
+  width: 100%;
+  max-width: 420px;
+
+  &-form {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: $radius-full;
+    padding: 0.3rem 0.4rem 0.3rem 0.75rem;
+    gap: 0.5rem;
+    transition: $transition-base;
+
+    &:focus-within {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.35);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
     }
-    .button-style{
-        height: 30px;
-        border-radius: 15px 15px 15px 15px ;
-        font-family: 'Roboto', sans-serif;
-        border: solid 1px #ebebebea;
-        background-color: #e0e0e094;
-        margin: 10px;
-        padding: 4px;
-        color: $text-color-bar-main;
-        font-size: 16px;
-        
-        a{
-            color: $text-color-bar-main;
-            text-decoration: none;
-        }
+  }
+
+  &-icon {
+    width: 1rem;
+    height: 1rem;
+    color: rgba(255, 255, 255, 0.6);
+    flex-shrink: 0;
+  }
+
+  &-input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    font-size: 0.88rem;
+    color: #fff;
+    font-family: $font-base;
+    min-width: 0;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
     }
-    
+  }
+
+  &-btn {
+    padding: 0.4rem 0.875rem;
+    border-radius: $radius-full;
+    border: none;
+    background: rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: $font-base;
+    cursor: pointer;
+    transition: $transition-fast;
+    white-space: nowrap;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+      color: #fff;
+    }
+  }
 }
