@@ -6,22 +6,29 @@ import Home from './components/home/Home';
 import ContactUs from './components/contact/ContactUs';
 import CreateOrderPage from './components/order/CreateOrderPage';
 import CartPage from './components/cart/CartPage';
+import LoginPage from './components/auth/LoginPage';
+import RegisterPage from './components/auth/RegisterPage';
+import { AuthProvider } from './services/AuthContext';
 
 import React from 'react'
 
 function App() {
   return (
     <Router>
-      <div className="App">
-        <Header/>
-        <Routes>
-          <Route path="/" element={<Home/>}/>
-          <Route path="contact" element={<ContactUs/>}/>
-          <Route path="orders" element={<CreateOrderPage/>}/>
-          <Route path="cart" element={<CartPage/>}/>
-        </Routes>
-        <FooterMain/>
-      </div>      
+      <AuthProvider>
+        <div className="App">
+          <Header/>
+          <Routes>
+            <Route path="/" element={<Home/>}/>
+            <Route path="contact" element={<ContactUs/>}/>
+            <Route path="orders" element={<CreateOrderPage/>}/>
+            <Route path="cart" element={<CartPage/>}/>
+            <Route path="login" element={<LoginPage/>}/>
+            <Route path="register" element={<RegisterPage/>}/>
+          </Routes>
+          <FooterMain/>
+        </div>
+      </AuthProvider>
     </Router>
   )
 }
