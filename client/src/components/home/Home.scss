@@ -1,11 +1,17 @@
+@import '../../styles/VariableStyle.scss';
+
 .home {
-    &-preview {
-        margin-top: 0px;
-        
-    }
-    &-content {
-        font-family: 'Roboto' , sans-serif',Segoe UI', Tahoma, Geneva, Verdana;
-        font-size: 20px;
-        
-    }
+  font-family: $font-base;
+  color: $text-primary;
+  background: $bg-page;
+
+  &-preview {
+    margin-top: 0;
+  }
+
+  &-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+  }
 }

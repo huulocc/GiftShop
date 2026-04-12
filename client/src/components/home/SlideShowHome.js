@@ -1,58 +1,90 @@
-import { useState,useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import './SlideShowHome.scss';
-import slideData from './slideData.json' ;
-import prev from '../../stories/icons/previous.png'
-import next from '../../stories/icons/next.png'
-
+import slideData from './slideData.json';
 
 function SlideShowHome() {
-    const [slides ] = useState(slideData);
-    const [slideCurrent,setSlideCurrent]=useState(0);
-    let slidesLength=slides.length;
-    const handlePrev=()=>{
-        setSlideCurrent(slideCurrent===0?slidesLength-1:slideCurrent-1);
-    }
-    const handleNext=()=>{
-        setSlideCurrent(slideCurrent===slidesLength-1?0:slideCurrent+1);
-    }
-    useEffect(()=>{
-        const interval = setInterval(()=> {
-          setSlideCurrent(slideCurrent === slidesLength - 1 ? 0 : slideCurrent + 1)
-      },5000 );
-        return () => clearInterval(interval);
-      },[slideCurrent]);
+  const [slides] = useState(slideData);
+  const [slideCurrent, setSlideCurrent] = useState(0);
+  const slidesLength = slides.length;
+
+  const handlePrev = () => {
+    setSlideCurrent(slideCurrent === 0 ? slidesLength - 1 : slideCurrent - 1);
+  }
+
+  const handleNext = useCallback(() => {
+    setSlideCurrent(slideCurrent === slidesLength - 1 ? 0 : slideCurrent + 1);
+  }, [slideCurrent, slidesLength]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      handleNext();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [handleNext]);
+
   return (
     <div className='slides'>
-        <div className='slideshow'>
-            {
-                slides.map((item,index)=>{
-                    return(
-                        <img src={item.image} alt={item.title} className={index===slideCurrent?"slideshow-img-active":"slideshow-img-freezer"} key={index}></img>
-                    )
-            })}
-        </div>
-        <div className="slideshow-preview">
-            <div className="slideshow-preview-left">
-                <button className="slideshow-preview-button" onClick={handlePrev}>
-                    <img src={prev} alt="prev-button" className="slideshow-preview-button-previous"></img>
-                </button>
-            </div>
-            <div className="slideshow-preview-center">
-                {/* {slides.map((item, index) =>{
-                    return( index === slideCurrent &&
-                      <div key={index}>
-                        <h2 className="slideshow-preview-center-title">{item.title}</h2>
-                        <p dangerouslySetInnerHTML={{__html: item.content}}    className="slideshow-preview-center-content"/>
-                      </div>
-                    )
-                })} */}
-            </div>
-            <div className="slideshow-preview-right">
-                <button className="slideshow-preview-button" onClick={handleNext}>
-                    <img src={next} alt="prev-button" className="slideshow-preview-button-next"></img>
-                </button>
-            </div>
-        </div>
+      {/* Images with crossfade */}
+      <div className='slideshow'>
+        {slides.map((item, index) => (
+          <img
+            src={item.image}
+            alt={item.title}
+            className={`slideshow-img ${index === slideCurrent ? 'slideshow-img--active' : ''}`}
+            key={index}
+          />
+        ))}
+      </div>
+
+      {/* Gradient overlay */}
+      <div className="slideshow-overlay" />
+
+      {/* Text overlay */}
+      <div className="slideshow-text">
+        {slides.map((item, index) => (
+          <div
+            key={index}
+            className={`slideshow-text-slide ${index === slideCurrent ? 'slideshow-text-slide--active' : ''}`}
+          >
+            <h2 className="slideshow-text-title">{item.title}</h2>
+            <p className="slideshow-text-content">{item.content}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Navigation arrows */}
+      <div className="slideshow-nav">
+        <button
+          className="slideshow-nav-btn slideshow-nav-btn--prev"
+          onClick={handlePrev}
+          aria-label="Previous slide"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+        <button
+          className="slideshow-nav-btn slideshow-nav-btn--next"
+          onClick={handleNext}
+          aria-label="Next slide"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
+      </div>
+
+      {/* Dot indicators */}
+      <div className="slideshow-dots">
+        {slides.map((_, index) => (
+          <button
+            key={index}
+            className={`slideshow-dot ${index === slideCurrent ? 'slideshow-dot--active' : ''}`}
+            onClick={() => setSlideCurrent(index)}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
     </div>
   )
 }

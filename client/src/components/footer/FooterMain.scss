@@ -1,122 +1,184 @@
-* {
-    list-style: none
-}
-.footer{
-    height: max-content;
-    font-family: 'Roboto', sans-serif;
-    font-size: 18px;
-    font-weight: 500;
-    background-color: #e6e6e6;
-    margin: auto;
-    padding: 10px;
-    color: rgb(107, 107, 107);
-    list-style: none;
-    p{
-        margin: 0px;
-    }
-    h4{
-        margin: 10px 0px;
-    }
-    &-title{
-        margin-left: 20px;
-        text-align: left;
-        padding: 10px;
-        &-logo{
-            height: 5vh;
-            width: auto;
-        }
-        
-    }
-    &-content{
-        display: flex;
-        flex-direction: row;
-        margin-left: 40px;
+@import '../../styles/VariableStyle.scss';
 
-        &-left{
-            display: flex;
-            flex-direction: column;
-            flex: 3;
-            margin: 0px;
-            padding-top: 3px;
-            &-url{
-                font-size: 14px;
-                color: rgb(107, 107, 107);
-                text-decoration: none;
-                width: fit-content;
-            }
-        }
-        &-center{
-            display: flex;
-            flex-direction: column;
-            flex: 3;
-            margin: 0px;
-            padding-top: 3px;
-            &-url{
-                font-size: 14px;
-                color: rgb(107, 107, 107);
-                text-decoration: none;
-                width: fit-content;
-            }
-        }
-        &-right{
-            display: flex;
-            flex-direction: column;
-            flex: 3;
-            margin: 0px;
-            padding-top: 3px;
-            &-url{
-                font-size: 14px;
-                color: rgb(107, 107, 107);
-                text-decoration: none;
-                width: fit-content;
-            }
-        }
-        &-contact{
-            display: flex;
-            flex-direction: column;
-            flex: 3;
-            margin-top : 10px;
-            padding-top: 3px;
-            font-size: 14px;
-        }
-
-    }
-    &-social{
-        color: rgb(107, 107, 107);
-        margin-left: 20px;
-        padding-right: 20px;
-        &-title{
-            width: 100%;
-        }
-        display: flex;
-        flex-wrap: wrap;
-        &-contact{
-            display: flex;
-            flex-direction: row;
-            margin-right: 10px;
-            
-            &-url{
-                text-decoration: none;
-                color: rgb(107, 107, 107);
-                
-            }
-            &-img{
-            height: 20px;
-            padding: 5px 5px 0px 5px;
-            }
-        }
-        
-    }
-    &-copyright{
-        text-align: center;
-        p{
-            text-align: center;
-            font-size: 14px;
-        }
-    }
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+.footer {
+  font-family: $font-base;
+  background: #1a1a2e;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
 }
-@media (max-Width:768px){
-    .footer-content{
-        flex-wrap: wrap;
+
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 1.5rem;
+}
+
+/* ── Brand ────────────────────────────────────────────── */
+.footer-brand {
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+
+  &-logo {
+    height: 36px;
+    width: auto;
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+  }
+
+  &-tagline {
+    margin: 0;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.45);
+  }
+}
+
+/* ── Link Columns ─────────────────────────────────────── */
+.footer-columns {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.footer-col-title {
+  margin: 0 0 0.875rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.footer-col-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.footer-col-link {
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.85rem;
+  font-weight: 400;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #fff;
+  }
+}
+
+/* ── Contact Info ─────────────────────────────────────── */
+.footer-contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  p {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.55);
+
+    svg {
+      width: 0.9rem;
+      height: 0.9rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+      color: rgba(255, 255, 255, 0.4);
     }
+  }
+}
+
+/* ── Social ───────────────────────────────────────────── */
+.footer-social {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  &-title {
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  &-icons {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  &-link {
+    width: 36px;
+    height: 36px;
+    border-radius: $radius-sm;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.55);
+    transition: all 0.2s ease;
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+  }
+}
+
+/* ── Copyright ────────────────────────────────────────── */
+.footer-copyright {
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 1rem;
+
+  p {
+    margin: 0;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.35);
+  }
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media (max-width: 768px) {
+  .footer-columns {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-columns {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .footer-inner {
+    padding: 2rem 1rem 1rem;
+  }
 }

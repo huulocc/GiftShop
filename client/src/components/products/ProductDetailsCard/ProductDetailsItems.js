@@ -24,10 +24,8 @@ function ProductDetailsItems(props) {
         </div>
         <div className='productdetails-button' >
             <Link to={`./detail/${item.id}`} className='productdetails-button-details'>
-                <button className='productdetails-button-details'>
-                    <p  className='productdetails-button-p'>Details</p>
-                    <img src={detailsicon} alt="detailsicon" className='productdetails-button-icon'/>
-                </button>
+                <p className='productdetails-button-p'>Details</p>
+                <img src={detailsicon} alt="detailsicon" className='productdetails-button-icon'/>
             </Link>
             <button className='productdetails-button-addToCart'>
                 <p  className='productdetails-button-p' >Add To Cart</p>

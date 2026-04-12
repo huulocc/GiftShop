@@ -46,7 +46,6 @@ function OrderList() {
 
   /**
    * Handle order update (from OrderActions)
-   * Replace the updated order in the list
    */
   const handleOrderUpdated = (updatedOrder) => {
     setOrders((prev) =>
@@ -62,20 +61,69 @@ function OrderList() {
     setPagination((prev) => ({ ...prev, page: 1 }))
   }
 
+  // Count orders by status for badges
+  const countByStatus = (status) => {
+    if (!status) return orders.length
+    return orders.filter((o) => o.status === status).length
+  }
+
   const statusFilters = [
-    { value: '', label: 'All', icon: '' },
-    { value: 'pending', label: 'Pending', icon: '' },
-    { value: 'placed', label: 'Placed', icon: '' },
-    { value: 'cancelled', label: 'Cancelled', icon: '' },
+    {
+      value: '',
+      label: 'All',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
+          <line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/>
+          <line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+        </svg>
+      ),
+    },
+    {
+      value: 'pending',
+      label: 'Pending',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+      ),
+    },
+    {
+      value: 'placed',
+      label: 'Placed',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      ),
+    },
+    {
+      value: 'cancelled',
+      label: 'Cancelled',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+        </svg>
+      ),
+    },
   ]
 
   return (
     <div className="order-list-container">
+
+      {/* Header */}
       <div className="order-list-header">
-        <h2 className="order-list-title">
-          <span></span> Order Management
-        </h2>
-        <button className="btn-refresh" onClick={fetchOrders}>
+        <div className="order-list-title-group">
+          <h2 className="order-list-title">All Orders</h2>
+          {!loading && (
+            <span className="order-list-count">{pagination.total} total</span>
+          )}
+        </div>
+        <button className="btn-refresh" onClick={fetchOrders} title="Refresh">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+            <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+          </svg>
           Refresh
         </button>
       </div>
@@ -85,10 +133,14 @@ function OrderList() {
         {statusFilters.map((filter) => (
           <button
             key={filter.value}
-            className={`filter-btn ${statusFilter === filter.value ? 'active' : ''}`}
+            className={`filter-btn filter-btn--${filter.value || 'all'} ${statusFilter === filter.value ? 'active' : ''}`}
             onClick={() => handleFilterChange(filter.value)}
           >
-            {filter.icon} {filter.label}
+            <span className="filter-btn-icon">{filter.icon}</span>
+            {filter.label}
+            {!loading && (
+              <span className="filter-btn-badge">{countByStatus(filter.value)}</span>
+            )}
           </button>
         ))}
       </div>
@@ -96,34 +148,62 @@ function OrderList() {
       {/* Error */}
       {error && (
         <div className="order-list-error">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
           {error}
         </div>
       )}
 
-      {/* Loading */}
+      {/* Loading Skeleton */}
       {loading && (
         <div className="order-list-loading">
-          <div className="spinner"></div>
-          <span>Loading orders...</span>
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="skeleton-card">
+              <div className="skeleton-header">
+                <div className="skeleton-line skeleton-line--short" />
+                <div className="skeleton-badge" />
+              </div>
+              <div className="skeleton-body">
+                <div className="skeleton-line" />
+                <div className="skeleton-line skeleton-line--medium" />
+                <div className="skeleton-line skeleton-line--short" />
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
-      {/* Orders */}
+      {/* Empty State */}
       {!loading && !error && orders.length === 0 && (
         <div className="order-list-empty">
-          <span className="empty-icon"></span>
-          <p>No orders found</p>
-          <span className="empty-hint">Create a new order to get started!</span>
+          <div className="empty-illustration">
+            <svg viewBox="0 0 120 120" fill="none">
+              <circle cx="60" cy="60" r="56" fill="#eef2ff"/>
+              <path d="M40 35h40a4 4 0 014 4v42a4 4 0 01-4 4H40a4 4 0 01-4-4V39a4 4 0 014-4z" fill="white" stroke="#c3dafe" strokeWidth="2"/>
+              <path d="M48 52h24M48 60h16M48 68h20" stroke="#c3dafe" strokeWidth="2.5" strokeLinecap="round"/>
+              <circle cx="82" cy="82" r="16" fill="#667eea"/>
+              <path d="M76 82h12M82 76v12" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+            </svg>
+          </div>
+          <h3 className="empty-title">No orders found</h3>
+          <p className="empty-hint">
+            {statusFilter
+              ? `No ${statusFilter} orders yet.`
+              : 'Create a new order to get started!'}
+          </p>
         </div>
       )}
 
+      {/* Orders Grid */}
       {!loading && orders.length > 0 && (
         <div className="order-list">
-          {orders.map((order) => (
+          {orders.map((order, i) => (
             <OrderCard
               key={order.id}
               order={order}
               onOrderUpdated={handleOrderUpdated}
+              style={{ animationDelay: `${i * 60}ms` }}
             />
           ))}
         </div>
@@ -132,7 +212,7 @@ function OrderList() {
       {/* Pagination info */}
       {!loading && pagination.total > 0 && (
         <div className="order-list-pagination">
-          Showing {orders.length} of {pagination.total} order(s)
+          Showing <strong>{orders.length}</strong> of <strong>{pagination.total}</strong> order(s)
         </div>
       )}
     </div>
