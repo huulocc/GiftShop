@@ -1,10 +1,23 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link } from 'react-router-dom';
 import "./TopBars.scss";
 import Search from "./Search";
 import LogoMain from "./LogoMain"
+import CartManager from "../../services/CartManager"
 
-function TopBars({handleSeachProduct, indexofCart, handlelogin, registerUser}) {
+function TopBars({handleSeachProduct, handlelogin, registerUser}) {
+  const cart = CartManager.getInstance()
+  const [cartCount, setCartCount] = useState(cart.getTotalCount())
+
+  const syncCount = useCallback(() => {
+    setCartCount(cart.getTotalCount())
+  }, [cart])
+
+  useEffect(() => {
+    const unsubscribe = cart.subscribe(syncCount)
+    return unsubscribe
+  }, [cart, syncCount])
+
   return (
     <div className="top-bar">
       <div className="top-bar-left">
@@ -27,8 +40,8 @@ function TopBars({handleSeachProduct, indexofCart, handlelogin, registerUser}) {
             <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
             <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
           </svg>
-          {indexofCart > 0 && (
-            <span className="top-bar-right-badge">{indexofCart}</span>
+          {cartCount > 0 && (
+            <span className="top-bar-right-badge">{cartCount}</span>
           )}
         </Link>
         <Link to='/stores' className="top-bar-right-action">

@@ -5,7 +5,7 @@ import FooterMain from './components/footer/FooterMain';
 import Home from './components/home/Home';
 import ContactUs from './components/contact/ContactUs';
 import CreateOrderPage from './components/order/CreateOrderPage';
-import ProductData from './components/products/Products/Products.json'
+import CartPage from './components/cart/CartPage';
 
 import React from 'react'
 
@@ -18,6 +18,7 @@ function App() {
           <Route path="/" element={<Home/>}/>
           <Route path="contact" element={<ContactUs/>}/>
           <Route path="orders" element={<CreateOrderPage/>}/>
+          <Route path="cart" element={<CartPage/>}/>
         </Routes>
         <FooterMain/>
       </div>      
