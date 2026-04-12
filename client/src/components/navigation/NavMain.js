@@ -62,6 +62,12 @@ export default function NavMain() {
             <NavLink to="/orders" className={({isActive}) => isActive ? "nav-link nav-link--active" : "nav-link"} onClick={() => setMobileOpen(false)}>Orders</NavLink>
           </li>
           <li className="nav-main-ul-li">
+            <NavLink to="/signin" className={({isActive}) => isActive ? "nav-link nav-link--active" : "nav-link"} onClick={() => setMobileOpen(false)}>Sign In</NavLink>
+          </li>
+          <li className="nav-main-ul-li">
+            <NavLink to="/signup" className={({isActive}) => isActive ? "nav-link nav-link--active" : "nav-link"} onClick={() => setMobileOpen(false)}>Sign Up</NavLink>
+          </li>
+          <li className="nav-main-ul-li">
             <NavLink to="/about-us" className={({isActive}) => isActive ? "nav-link nav-link--active" : "nav-link"} onClick={() => setMobileOpen(false)}>About Us</NavLink>
           </li>
           <li className="nav-main-ul-li">

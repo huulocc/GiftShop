@@ -1,13 +1,28 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import './ProductDetailsItems.scss'
 import detailsicon from '../../../stories/icons/more-information.png'
 import carticon from '../../../stories/icons/add-to-cart.png'
 import compareicon from '../../../stories/icons/compare.png'
+import { addCartItem } from '../../../services/cartService'
 
 
 function ProductDetailsItems(props) {
     const item=props;
+        const navigate = useNavigate();
+
+        const handleAddToCart = () => {
+                addCartItem({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    thumbnail: Array.isArray(item.images) ? item.images[0]?.path : item.images,
+                    brand: item.brand?.name || item.brand,
+                    category: item.categories?.name || item.categories,
+                });
+                navigate('/cart');
+        };
+
   return (
     <div className="productdetails">
         <div className="productdetails-avatar">
@@ -27,7 +42,7 @@ function ProductDetailsItems(props) {
                 <p className='productdetails-button-p'>Details</p>
                 <img src={detailsicon} alt="detailsicon" className='productdetails-button-icon'/>
             </Link>
-            <button className='productdetails-button-addToCart'>
+            <button type='button' className='productdetails-button-addToCart' onClick={handleAddToCart}>
                 <p  className='productdetails-button-p' >Add To Cart</p>
                 <img src={carticon} alt="carticon" className='productdetails-button-icon' />
             </button>

@@ -5,7 +5,10 @@ import FooterMain from './components/footer/FooterMain';
 import Home from './components/home/Home';
 import ContactUs from './components/contact/ContactUs';
 import CreateOrderPage from './components/order/CreateOrderPage';
-import ProductData from './components/products/Products/Products.json'
+import SignIn from './components/auth/SignIn';
+import SignUp from './components/auth/SignUp';
+import CartPage from './components/cart/CartPage';
+import PaymentResult from './components/payment/PaymentResult';
 
 import React from 'react'
 
@@ -18,6 +21,11 @@ function App() {
           <Route path="/" element={<Home/>}/>
           <Route path="contact" element={<ContactUs/>}/>
           <Route path="orders" element={<CreateOrderPage/>}/>
+          <Route path="signin" element={<SignIn/>}/>
+          <Route path="signup" element={<SignUp/>}/>
+          <Route path="cart" element={<CartPage/>}/>
+          <Route path="payment/return" element={<PaymentResult/>}/>
+          <Route path="payment-result" element={<PaymentResult/>}/>
         </Routes>
         <FooterMain/>
       </div>      
