@@ -4,6 +4,8 @@ const session = require('express-session')
 const orderRoutes = require('./routes/order.routes')
 const cartRoutes = require('./routes/cart.routes')
 const authRoutes = require('./routes/auth.routes')
+const categoryRoutes = require('./routes/category.routes')
+const productRoutes = require('./routes/product.routes')
 
 const app = express()
 
@@ -40,5 +42,11 @@ app.use('/api/orders', orderRoutes)
 
 // Cart routes
 app.use('/api/cart', cartRoutes)
+
+// Category routes
+app.use('/api/categories', categoryRoutes)
+
+// Product routes
+app.use('/api/products', productRoutes)
 
 module.exports = app
