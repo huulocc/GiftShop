@@ -23,11 +23,11 @@ class UpdateOrderCommand extends Command {
 
   /**
    * Execute: Update the order details
-   * @returns {Object} updated order
+   * @returns {Promise<Object>} updated order
    */
-  execute() {
+  async execute() {
     // Save current state for undo
-    const currentOrder = this.orderService.getOrderById(this.orderId)
+    const currentOrder = await this.orderService.getOrderById(this.orderId)
     if (currentOrder) {
       this.previousState = { ...currentOrder }
     }
@@ -37,11 +37,11 @@ class UpdateOrderCommand extends Command {
 
   /**
    * Undo: Revert to previous state
-   * @returns {Object} reverted order
+   * @returns {Promise<Object>} reverted order
    */
-  undo() {
+  async undo() {
     if (this.previousState) {
-      const { id, createdAt, ...restoreData } = this.previousState
+      const { orderId, orderNumber, createdAt, ...restoreData } = this.previousState
       return this.orderService.updateOrderDetails(this.orderId, restoreData)
     }
     throw new Error('Cannot undo: no previous state recorded')
