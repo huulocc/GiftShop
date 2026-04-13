@@ -13,19 +13,19 @@ class OrderCommandInvoker {
   /**
    * Execute a command and store it in history
    * @param {Command} command - The command to execute
-   * @returns {Object} result of command execution
+   * @returns {Promise<Object>} result of command execution
    */
-  executeCommand(command) {
-    const result = command.execute()
+  async executeCommand(command) {
+    const result = await command.execute()
     this.history.push(command)
     return result
   }
 
   /**
    * Undo the last executed command
-   * @returns {Object|null} result of undo, or null if no history
+   * @returns {Promise<Object|null>} result of undo, or null if no history
    */
-  undoLastCommand() {
+  async undoLastCommand() {
     const command = this.history.pop()
     if (command) {
       return command.undo()

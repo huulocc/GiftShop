@@ -5,22 +5,34 @@ import FooterMain from './components/footer/FooterMain';
 import Home from './components/home/Home';
 import ContactUs from './components/contact/ContactUs';
 import CreateOrderPage from './components/order/CreateOrderPage';
-import ProductData from './components/products/Products/Products.json'
+import CartPage from './components/cart/CartPage';
+import LoginPage from './components/auth/LoginPage';
+import RegisterPage from './components/auth/RegisterPage';
+import ManagerDashboard from './components/manager/ManagerDashboard';
+import SearchResults from './components/search/SearchResults';
+import { AuthProvider } from './services/AuthContext';
 
 import React from 'react'
 
 function App() {
   return (
     <Router>
-      <div className="App">
-        <Header/>
-        <Routes>
-          <Route path="/" element={<Home/>}/>
-          <Route path="contact" element={<ContactUs/>}/>
-          <Route path="orders" element={<CreateOrderPage/>}/>
-        </Routes>
-        <FooterMain/>
-      </div>      
+      <AuthProvider>
+        <div className="App">
+          <Header/>
+          <Routes>
+            <Route path="/" element={<Home/>}/>
+            <Route path="contact" element={<ContactUs/>}/>
+            <Route path="orders" element={<CreateOrderPage/>}/>
+            <Route path="cart" element={<CartPage/>}/>
+            <Route path="login" element={<LoginPage/>}/>
+            <Route path="register" element={<RegisterPage/>}/>
+            <Route path="manager" element={<ManagerDashboard/>}/>
+            <Route path="search" element={<SearchResults/>}/>
+          </Routes>
+          <FooterMain/>
+        </div>
+      </AuthProvider>
     </Router>
   )
 }

@@ -22,10 +22,10 @@ class PlaceOrderCommand extends Command {
 
   /**
    * Execute: Place the order (pending → placed)
-   * @returns {Object} updated order
+   * @returns {Promise<Object>} updated order
    */
-  execute() {
-    const order = this.orderService.getOrderById(this.orderId)
+  async execute() {
+    const order = await this.orderService.getOrderById(this.orderId)
     if (order) {
       this.previousStatus = order.status
     }
@@ -35,9 +35,9 @@ class PlaceOrderCommand extends Command {
 
   /**
    * Undo: Revert back to previous status
-   * @returns {Object} reverted order
+   * @returns {Promise<Object>} reverted order
    */
-  undo() {
+  async undo() {
     if (this.previousStatus) {
       return this.orderService.updateOrderStatus(this.orderId, this.previousStatus)
     }
