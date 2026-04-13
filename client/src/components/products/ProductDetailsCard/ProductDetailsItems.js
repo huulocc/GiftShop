@@ -36,7 +36,6 @@ function ProductDetailsItems(props) {
         <div className='productdetails-content'>
             <h4 className='productdetails-content-h4' >{item.name}</h4>
             <h5 className='productdetails-content-h5'>{item.categories}</h5>
-            <h5 className='productdetails-content-h5'>{item.brand}</h5>
             <h3 className='productdetails-content-h3'>Price :{item.price}$</h3>
         </div>
         <div className='productdetails-button' >

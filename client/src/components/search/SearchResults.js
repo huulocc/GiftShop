@@ -50,12 +50,20 @@ function SearchResults() {
   const hasProducts = results.products && results.products.length > 0
   const noMatch = !hasCategories && !hasProducts
 
+  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(query)
+  const isCategoryView = isUUID && results.categories?.length === 1
+  
+  const headerTitle = isCategoryView ? `Category: ${results.categories[0].categoryName}` : 'Search Results'
+  const headerSubtitle = isCategoryView 
+    ? (results.categories[0].description || `Showing products in ${results.categories[0].categoryName}`)
+    : `Showing results for: "${query}"`
+
   return (
     <div className="search-page">
       <div className="search-container">
         <div className="search-header">
-          <h1>Search Results</h1>
-          <p>Showing results for: <strong>"{query}"</strong></p>
+          <h1>{headerTitle}</h1>
+          <p>{!isCategoryView && 'Showing results for: '}<strong>{isCategoryView ? headerSubtitle : `"${query}"`}</strong></p>
         </div>
 
         {error && <div className="search-alert search-alert--error">{error}</div>}
@@ -71,7 +79,7 @@ function SearchResults() {
           </div>
         )}
 
-        {hasCategories && (
+        {hasCategories && !isCategoryView && (
           <section className="search-section">
             <h2 className="search-section-title">Categories</h2>
             <div className="search-categories-grid">
@@ -96,7 +104,6 @@ function SearchResults() {
                     name={prod.productName}
                     price={prod.price}
                     status={prod.typeInfo?.label || 'General'}
-                    brand={prod.categoryName || 'No Category'}
                     images={prod.imageUrl || "/data/placeholder.jpg"}
                   />
                 </div>

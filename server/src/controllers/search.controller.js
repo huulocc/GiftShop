@@ -48,7 +48,7 @@ class SearchController {
            LEFT JOIN categories c ON p.category_id = c.category_id
            LEFT JOIN users u1 ON p.created_by = u1.user_id
            LEFT JOIN users u2 ON p.updated_by = u2.user_id
-           WHERE p.product_id = $1 AND p.is_active = TRUE`,
+           WHERE (p.product_id = $1 OR p.category_id = $1) AND p.is_active = TRUE`,
           [queryTerm]
         )
         categories = categoryRes.rows
