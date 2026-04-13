@@ -29,6 +29,7 @@ class Product {
     description,
     price,
     stockQuantity,
+    imageUrl,
     isActive,
     createdBy,
     createdByName,
@@ -45,6 +46,7 @@ class Product {
     this.description = description || null
     this.price = parseFloat(price) || 0
     this.stockQuantity = parseInt(stockQuantity, 10) || 0
+    this.imageUrl = imageUrl || null
     this.isActive = isActive !== undefined ? isActive : true
     this.createdBy = createdBy || null
     this.createdByName = createdByName || null
@@ -87,6 +89,7 @@ class Product {
       description: this.description,
       price: this.price,
       stockQuantity: this.stockQuantity,
+      imageUrl: this.imageUrl,
       isActive: this.isActive,
       isInStock: this.isInStock(),
       typeInfo: this.getTypeInfo(),

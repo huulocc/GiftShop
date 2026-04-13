@@ -59,7 +59,7 @@ class ProductController {
    */
   async create(req, res) {
     try {
-      const { productName, categoryId, productType, description, price, stockQuantity } = req.body
+      const { productName, categoryId, productType, description, price, stockQuantity } = req.body || {}
 
       // Validation
       const errors = []
@@ -84,6 +84,7 @@ class ProductController {
           description: description?.trim() || null,
           price: parseFloat(price),
           stockQuantity: parseInt(stockQuantity, 10) || 0,
+          imageUrl: req.file ? req.file.location : null,
         },
         userId
       )
@@ -106,7 +107,7 @@ class ProductController {
    */
   async update(req, res) {
     try {
-      const { productName, categoryId, productType, description, price, stockQuantity } = req.body
+      const { productName, categoryId, productType, description, price, stockQuantity } = req.body || {}
       const userId = req.session.user.userId
 
       const product = await productService.update(
@@ -118,6 +119,7 @@ class ProductController {
           description: description?.trim(),
           price: price !== undefined ? parseFloat(price) : undefined,
           stockQuantity: stockQuantity !== undefined ? parseInt(stockQuantity, 10) : undefined,
+          imageUrl: req.file ? req.file.location : undefined,
         },
         userId
       )

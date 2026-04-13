@@ -9,6 +9,7 @@ import CartPage from './components/cart/CartPage';
 import LoginPage from './components/auth/LoginPage';
 import RegisterPage from './components/auth/RegisterPage';
 import ManagerDashboard from './components/manager/ManagerDashboard';
+import SearchResults from './components/search/SearchResults';
 import { AuthProvider } from './services/AuthContext';
 
 import React from 'react'
@@ -27,6 +28,7 @@ function App() {
             <Route path="login" element={<LoginPage/>}/>
             <Route path="register" element={<RegisterPage/>}/>
             <Route path="manager" element={<ManagerDashboard/>}/>
+            <Route path="search" element={<SearchResults/>}/>
           </Routes>
           <FooterMain/>
         </div>

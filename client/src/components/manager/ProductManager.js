@@ -23,8 +23,11 @@ function ProductManager() {
     description: '',
     price: '',
     stockQuantity: '0',
+    imageUrl: '',
   }
   const [form, setForm] = useState(emptyForm)
+  const [imageFile, setImageFile] = useState(null)
+  const [imagePreview, setImagePreview] = useState(null)
 
   // Stock editing
   const [stockEdit, setStockEdit] = useState(null)
@@ -68,6 +71,8 @@ function ProductManager() {
   const openAdd = () => {
     setEditing(null)
     setForm({ ...emptyForm, categoryId: categories[0]?.categoryId || '' })
+    setImageFile(null)
+    setImagePreview(null)
     setError('')
     setShowModal(true)
   }
@@ -81,7 +86,10 @@ function ProductManager() {
       description: prod.description || '',
       price: String(prod.price),
       stockQuantity: String(prod.stockQuantity),
+      imageUrl: prod.imageUrl || '',
     })
+    setImageFile(null)
+    setImagePreview(prod.imageUrl || null)
     setError('')
     setShowModal(true)
   }
@@ -89,6 +97,8 @@ function ProductManager() {
   const closeModal = () => {
     setShowModal(false)
     setEditing(null)
+    setImageFile(null)
+    setImagePreview(null)
     setError('')
   }
 
@@ -107,19 +117,24 @@ function ProductManager() {
     setSubmitting(true)
     setError('')
     try {
-      const payload = {
-        productName: form.productName.trim(),
-        categoryId: form.categoryId,
-        productType: form.productType,
-        description: form.description.trim() || null,
-        price: parseFloat(form.price),
-        stockQuantity: parseInt(form.stockQuantity, 10) || 0,
+      const formData = new FormData()
+      formData.append('productName', form.productName.trim())
+      formData.append('categoryId', form.categoryId)
+      formData.append('productType', form.productType)
+      if (form.description.trim()) {
+        formData.append('description', form.description.trim())
+      }
+      formData.append('price', parseFloat(form.price))
+      formData.append('stockQuantity', parseInt(form.stockQuantity, 10) || 0)
+      
+      if (imageFile) {
+        formData.append('image', imageFile)
       }
 
       if (editing) {
-        await productService.update(editing.productId, payload)
+        await productService.update(editing.productId, formData)
       } else {
-        await productService.create(payload)
+        await productService.create(formData)
       }
       closeModal()
       fetchProducts()
@@ -127,6 +142,19 @@ function ProductManager() {
       setError(err.response?.data?.error || 'Operation failed')
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image size must be less than 5MB')
+        return
+      }
+      setImageFile(file)
+      setImagePreview(URL.createObjectURL(file))
+      setError('')
     }
   }
 
@@ -200,6 +228,7 @@ function ProductManager() {
                 <tr>
                   <th>#</th>
                   <th>Name</th>
+                  <th>Image</th>
                   <th>Category</th>
                   <th>Type</th>
                   <th>Price</th>
@@ -215,6 +244,13 @@ function ProductManager() {
                     <tr key={prod.productId}>
                       <td>{(pagination.page - 1) * pagination.limit + idx + 1}</td>
                       <td className="mgr-table-name">{prod.productName}</td>
+                      <td>
+                        {prod.imageUrl ? (
+                          <img src={prod.imageUrl} alt={prod.productName} style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 4 }} />
+                        ) : (
+                          <span className="mgr-badge mgr-badge--general">No Img</span>
+                        )}
+                      </td>
                       <td>{prod.categoryName || '—'}</td>
                       <td>
                         <span className={`mgr-badge mgr-badge--${prod.productType}`}>
@@ -302,6 +338,24 @@ function ProductManager() {
                   placeholder="Product name"
                   autoFocus
                 />
+              </div>
+              <div className="mgr-form-group">
+                <label>Product Image</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  style={{ marginBottom: '0.5rem' }}
+                />
+                {imagePreview && (
+                  <div className="mgr-image-preview" style={{ marginTop: '0.5rem' }}>
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #e2e8f0' }}
+                    />
+                  </div>
+                )}
               </div>
               <div className="mgr-form-row">
                 <div className="mgr-form-group">

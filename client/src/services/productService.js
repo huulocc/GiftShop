@@ -29,12 +29,16 @@ const productService = {
   },
 
   async create(data) {
-    const response = await apiClient.post('/products', data)
+    const isFormData = data instanceof FormData
+    const config = isFormData ? { headers: { 'Content-Type': undefined } } : {}
+    const response = await apiClient.post('/products', data, config)
     return response.data
   },
 
   async update(productId, data) {
-    const response = await apiClient.put(`/products/${productId}`, data)
+    const isFormData = data instanceof FormData
+    const config = isFormData ? { headers: { 'Content-Type': undefined } } : {}
+    const response = await apiClient.put(`/products/${productId}`, data, config)
     return response.data
   },
 

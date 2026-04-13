@@ -6,6 +6,7 @@ const cartRoutes = require('./routes/cart.routes')
 const authRoutes = require('./routes/auth.routes')
 const categoryRoutes = require('./routes/category.routes')
 const productRoutes = require('./routes/product.routes')
+const searchRoutes = require('./routes/search.routes')
 
 const app = express()
 
@@ -48,5 +49,8 @@ app.use('/api/categories', categoryRoutes)
 
 // Product routes
 app.use('/api/products', productRoutes)
+
+// Search routes
+app.use('/api/search', searchRoutes)
 
 module.exports = app

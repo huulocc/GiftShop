@@ -39,6 +39,7 @@ CREATE TABLE products (
     description TEXT,
     price NUMERIC(12,2) NOT NULL CHECK (price >= 0),
     stock_quantity INTEGER NOT NULL DEFAULT 0 CHECK (stock_quantity >= 0),
+    image_url TEXT,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     created_by UUID REFERENCES users(user_id),
     updated_by UUID REFERENCES users(user_id),

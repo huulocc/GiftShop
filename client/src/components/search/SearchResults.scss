@@ -1,0 +1,153 @@
+@import '../../styles/VariableStyle.scss';
+
+.search-page {
+  min-height: calc(100vh - 200px);
+  padding: 3rem 1rem;
+  background: $bg-page;
+}
+
+.search-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.search-header {
+  margin-bottom: 2.5rem;
+  text-align: center;
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    font-size: 1rem;
+    color: $text-secondary;
+
+    strong {
+      color: $primary;
+    }
+  }
+}
+
+.search-section {
+  margin-bottom: 3rem;
+
+  &-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid $border-light;
+  }
+}
+
+.search-categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.search-category-card {
+  background: $surface;
+  border: 1px solid $border-light;
+  border-radius: $radius-lg;
+  padding: 1.5rem;
+  transition: $transition-fast;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-sm;
+    border-color: rgba($primary, 0.3);
+  }
+
+  h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: $primary-dark;
+    margin: 0 0 0.5rem;
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: $text-secondary;
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+.search-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 2rem;
+}
+
+.search-product-item {
+  display: flex;
+  justify-content: center;
+}
+
+.search-empty {
+  text-align: center;
+  padding: 4rem 1rem;
+
+  svg {
+    width: 64px;
+    height: 64px;
+    color: $text-muted;
+    margin-bottom: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    color: $text-primary;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: $text-secondary;
+    font-size: 1rem;
+  }
+}
+
+.search-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 1rem;
+  color: $text-muted;
+  font-size: 1.1rem;
+}
+
+.search-spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 4px solid $border-light;
+  border-top-color: $primary;
+  border-radius: 50%;
+  animation: searchSpin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.search-alert {
+  padding: 1rem 1.25rem;
+  border-radius: $radius-md;
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+  text-align: center;
+
+  &--error {
+    background: $danger-light;
+    color: $danger-dark;
+    border: 1px solid rgba($danger, 0.3);
+  }
+}
+
+@keyframes searchSpin {
+  to { transform: rotate(360deg); }
+}

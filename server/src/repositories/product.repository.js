@@ -82,15 +82,15 @@ class ProductRepository {
 
   /**
    * Create a new product
-   * @param {{ productName, categoryId, productType, description, price, stockQuantity, createdBy }} data
+   * @param {{ productName, categoryId, productType, description, price, stockQuantity, imageUrl, createdBy }} data
    * @returns {Promise<Object>}
    */
-  async create({ productName, categoryId, productType, description, price, stockQuantity, createdBy }) {
+  async create({ productName, categoryId, productType, description, price, stockQuantity, imageUrl, createdBy }) {
     const result = await pool.query(
-      `INSERT INTO products (product_name, category_id, product_type, description, price, stock_quantity, created_by, updated_by)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $7)
+      `INSERT INTO products (product_name, category_id, product_type, description, price, stock_quantity, image_url, created_by, updated_by)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $8)
        RETURNING *`,
-      [productName, categoryId, productType || 'general', description || null, price, stockQuantity || 0, createdBy]
+      [productName, categoryId, productType || 'general', description || null, price, stockQuantity || 0, imageUrl || null, createdBy]
     )
     // Re-fetch with joins
     return this.findById(result.rows[0].product_id)
@@ -99,10 +99,10 @@ class ProductRepository {
   /**
    * Update a product
    * @param {string} productId
-   * @param {{ productName, categoryId, productType, description, price, stockQuantity, updatedBy }} data
+   * @param {{ productName, categoryId, productType, description, price, stockQuantity, imageUrl, updatedBy }} data
    * @returns {Promise<Object|null>}
    */
-  async update(productId, { productName, categoryId, productType, description, price, stockQuantity, updatedBy }) {
+  async update(productId, { productName, categoryId, productType, description, price, stockQuantity, imageUrl, updatedBy }) {
     const result = await pool.query(
       `UPDATE products
        SET product_name = COALESCE($1, product_name),
@@ -111,11 +111,12 @@ class ProductRepository {
            description = COALESCE($4, description),
            price = COALESCE($5, price),
            stock_quantity = COALESCE($6, stock_quantity),
-           updated_by = $7,
+           image_url = COALESCE($7, image_url),
+           updated_by = $8,
            updated_at = NOW()
-       WHERE product_id = $8 AND is_active = TRUE
+       WHERE product_id = $9 AND is_active = TRUE
        RETURNING *`,
-      [productName, categoryId, productType, description, price, stockQuantity, updatedBy, productId]
+      [productName, categoryId, productType, description, price, stockQuantity, imageUrl, updatedBy, productId]
     )
     if (result.rows.length === 0) return null
     return this.findById(result.rows[0].product_id)
@@ -165,6 +166,7 @@ class ProductRepository {
       description: row.description,
       price: parseFloat(row.price),
       stockQuantity: row.stock_quantity,
+      imageUrl: row.image_url,
       isActive: row.is_active,
       createdBy: row.created_by,
       createdByName: row.created_by_name || null,
