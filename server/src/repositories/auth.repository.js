@@ -90,6 +90,16 @@ class AuthRepository {
     return this.findById(result.rows[0].user_id)
   }
 
+  /**
+   * Update password hash, clear reset tokens
+   */
+  async updatePassword(userId, passwordHash) {
+    await pool.query(
+      `UPDATE users SET password_hash = $1 WHERE user_id = $2`,
+      [passwordHash, userId]
+    )
+  }
+
   // ── Private Helpers ────────────────────────────────────
 
   /**

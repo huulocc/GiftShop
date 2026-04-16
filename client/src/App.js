@@ -8,6 +8,7 @@ import CreateOrderPage from './components/order/CreateOrderPage';
 import CartPage from './components/cart/CartPage';
 import LoginPage from './components/auth/LoginPage';
 import RegisterPage from './components/auth/RegisterPage';
+import ProfilePage from './components/profile/ProfilePage';
 import ManagerDashboard from './components/manager/ManagerDashboard';
 import SearchResults from './components/search/SearchResults';
 import { AuthProvider } from './services/AuthContext';
@@ -28,6 +29,7 @@ function App() {
             <Route path="login" element={<LoginPage/>}/>
             <Route path="register" element={<RegisterPage/>}/>
             <Route path="manager" element={<ManagerDashboard/>}/>
+            <Route path="profile" element={<ProfilePage/>}/>
             <Route path="search" element={<SearchResults/>}/>
           </Routes>
           <FooterMain/>
