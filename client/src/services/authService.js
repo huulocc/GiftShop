@@ -58,6 +58,17 @@ const authService = {
     const response = await apiClient.get('/auth/me')
     return response.data
   },
+
+  /**
+   * Change user password (requires auth)
+   * @param {{ currentPassword: string, newPassword: string }} data
+   * @returns {Promise<Object>}
+   */
+  async changePassword(data) {
+    const response = await apiClient.post('/auth/change-password', data)
+    return response.data
+  },
+
 }
 
 export default authService

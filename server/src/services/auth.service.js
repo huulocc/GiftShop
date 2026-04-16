@@ -21,7 +21,7 @@ class AuthService {
     // Check email uniqueness
     const existingEmail = await authRepository.findByEmail(email)
     if (existingEmail) {
-      const error = new Error('Email already registered')
+      const error = new Error('This email is already registered.')
       error.statusCode = 409
       throw error
     }
@@ -60,7 +60,7 @@ class AuthService {
   async login(email, password) {
     const user = await authRepository.findByEmail(email)
     if (!user) {
-      const error = new Error('Invalid email or password')
+      const error = new Error('Invalid email or password.')
       error.statusCode = 401
       throw error
     }
@@ -68,7 +68,7 @@ class AuthService {
     // Compare password
     const match = await bcrypt.compare(password, user.passwordHash)
     if (!match) {
-      const error = new Error('Invalid email or password')
+      const error = new Error('Invalid email or password.')
       error.statusCode = 401
       throw error
     }
@@ -92,6 +92,28 @@ class AuthService {
     const user = await authRepository.findById(userId)
     if (!user) return null
     return this._sanitise(user)
+  }
+
+  /**
+   * Change user password
+   */
+  async changePassword(userId, currentPassword, newPassword) {
+    const user = await authRepository.findById(userId)
+    if (!user) {
+      const error = new Error('User not found')
+      error.statusCode = 404
+      throw error
+    }
+
+    const match = await bcrypt.compare(currentPassword, user.passwordHash)
+    if (!match) {
+      const error = new Error('Current password is incorrect')
+      error.statusCode = 400
+      throw error
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS)
+    await authRepository.updatePassword(userId, passwordHash)
   }
 
   // ── Private Helpers ────────────────────────────────────
