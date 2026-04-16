@@ -11,8 +11,6 @@ import RegisterPage from './components/auth/RegisterPage';
 import ProfilePage from './components/profile/ProfilePage';
 import ManagerDashboard from './components/manager/ManagerDashboard';
 import SearchResults from './components/search/SearchResults';
-import ProductsPage from './components/products/ProductsPage';
-import AboutUs from './components/about/AboutUs';
 import { AuthProvider } from './services/AuthContext';
 
 import React from 'react'
@@ -33,8 +31,6 @@ function App() {
             <Route path="manager" element={<ManagerDashboard/>}/>
             <Route path="profile" element={<ProfilePage/>}/>
             <Route path="search" element={<SearchResults/>}/>
-            <Route path="products" element={<ProductsPage/>}/>
-            <Route path="about-us" element={<AboutUs/>}/>
           </Routes>
           <FooterMain/>
         </div>
