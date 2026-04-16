@@ -1,292 +1,212 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import './CartPage.scss';
-import {
-  calculateCartSubtotal,
-  clearCart,
-  getCartItems,
-  removeCartItem,
-  saveLastPayment,
-  updateCartItemQuantity,
-} from '../../services/cartService';
+import React, { useState, useEffect, useCallback } from 'react'
+import { Link } from 'react-router-dom'
+import CartManager from '../../services/CartManager'
+import './CartPage.scss'
 
-function formatMoney(value) {
-  return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
+/**
+ * CartPage — Full cart view
+ *
+ * Subscribes to CartManager (Singleton) for live updates.
+ * Allows quantity adjustment and item removal.
+ */
 function CartPage() {
-  const navigate = useNavigate();
-  const [cartItems, setCartItems] = useState([]);
-  const [selectedIds, setSelectedIds] = useState([]);
-  const [coupon, setCoupon] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('momo');
-  const [error, setError] = useState('');
+  const cart = CartManager.getInstance()
+  const [items, setItems] = useState(cart.getItems())
+  const [removingId, setRemovingId] = useState(null)
+
+  const syncItems = useCallback(() => {
+    setItems(cart.getItems())
+  }, [cart])
 
   useEffect(() => {
-    const items = getCartItems();
-    setCartItems(items);
-    setSelectedIds(items.map((item) => item.id));
-  }, []);
+    const unsubscribe = cart.subscribe(syncItems)
+    return unsubscribe
+  }, [cart, syncItems])
 
-  const selectedItems = useMemo(
-    () => cartItems.filter((item) => selectedIds.includes(item.id)),
-    [cartItems, selectedIds]
-  );
+  const handleIncrement = (productId) => {
+    const item = items.find((i) => i.productId === productId)
+    if (item) cart.updateQuantity(productId, item.quantity + 1)
+  }
 
-  const subtotal = useMemo(() => calculateCartSubtotal(selectedItems), [selectedItems]);
-  const discount = useMemo(() => {
-    if (!coupon.trim()) return 0;
-    return Math.min(subtotal * 0.1, subtotal);
-  }, [coupon, subtotal]);
-  const tax = useMemo(() => Math.round(subtotal * 0.05), [subtotal]);
-  const grandTotal = Math.max(0, subtotal - discount + tax);
-
-  const updateCartState = (nextItems) => {
-    setCartItems(nextItems);
-    setSelectedIds((currentSelectedIds) =>
-      currentSelectedIds.filter((id) => nextItems.some((item) => item.id === id))
-    );
-  };
-
-  const toggleSelectAll = (event) => {
-    setSelectedIds(event.target.checked ? cartItems.map((item) => item.id) : []);
-  };
-
-  const toggleItem = (itemId) => {
-    setSelectedIds((currentSelectedIds) =>
-      currentSelectedIds.includes(itemId)
-        ? currentSelectedIds.filter((id) => id !== itemId)
-        : [...currentSelectedIds, itemId]
-    );
-  };
-
-  const handleQuantityChange = (itemId, quantity) => {
-    const nextItems = updateCartItemQuantity(itemId, quantity);
-    updateCartState(nextItems);
-  };
-
-  const handleRemoveItem = (itemId) => {
-    const nextItems = removeCartItem(itemId);
-    updateCartState(nextItems);
-  };
-
-  const handleClearAll = () => {
-    const nextItems = clearCart();
-    updateCartState(nextItems);
-  };
-
-  const handleCheckout = (event) => {
-    event.preventDefault();
-    setError('');
-
-    if (selectedItems.length === 0) {
-      setError('Please select at least one item before checkout.');
-      return;
+  const handleDecrement = (productId) => {
+    const item = items.find((i) => i.productId === productId)
+    if (item && item.quantity > 1) {
+      cart.updateQuantity(productId, item.quantity - 1)
     }
+  }
 
-    const payment = {
-      orderid: `ORD-${Date.now()}`,
-      requestid: `REQ-${Date.now()}`,
-      transid: `TRANS-${Date.now()}`,
-      payment_method: paymentMethod,
-      payment_status: 'completed',
-      amount: Math.round(grandTotal),
-      items: selectedItems,
-    };
+  const handleRemove = (productId) => {
+    setRemovingId(productId)
+    setTimeout(() => {
+      cart.removeItem(productId)
+      setRemovingId(null)
+    }, 300)
+  }
 
-    saveLastPayment(payment);
-    navigate('/payment/return', { state: { payment } });
-  };
+  const handleClear = () => {
+    cart.clearCart()
+  }
 
-  const allSelected = cartItems.length > 0 && selectedIds.length === cartItems.length;
+  const totalCount = cart.getTotalCount()
+  const totalPrice = cart.getTotalPrice()
 
+  // ── Empty State ──
+  if (items.length === 0) {
+    return (
+      <div className="cart-page">
+        <div className="cart-empty">
+          <div className="cart-empty-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+            </svg>
+          </div>
+          <h2 className="cart-empty-title">Your cart is empty</h2>
+          <p className="cart-empty-text">Looks like you haven't added any gifts yet. Explore our collection!</p>
+          <Link to="/" className="cart-empty-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Continue Shopping
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Cart Content ──
   return (
-    <section className="cart-page py-5">
-      <div className="container">
-        <form id="checkoutForm" onSubmit={handleCheckout}>
-          <div className="row g-4">
-            <div className="col-lg-8">
-              <div className="d-flex align-items-center justify-content-between mb-3">
-                <h4 className="mb-0">Shopping Cart</h4>
-              </div>
+    <div className="cart-page">
+      {/* Hero */}
+      <div className="cart-hero">
+        <div className="cart-hero-inner">
+          <div className="cart-hero-text">
+            <h1 className="cart-hero-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+              </svg>
+              Shopping Cart
+            </h1>
+            <p className="cart-hero-subtitle">{totalCount} {totalCount === 1 ? 'item' : 'items'} in your cart</p>
+          </div>
+        </div>
+      </div>
 
-              {error && <div className="cart-alert">{error}</div>}
+      {/* Main layout */}
+      <div className="cart-layout">
+        {/* Items list */}
+        <div className="cart-items">
+          <div className="cart-items-header">
+            <span className="cart-items-header-label">Product</span>
+            <span className="cart-items-header-label">Price</span>
+            <span className="cart-items-header-label">Quantity</span>
+            <span className="cart-items-header-label">Total</span>
+            <span className="cart-items-header-label"></span>
+          </div>
 
-              <div className="card shadow-sm border-0 rounded-4">
-                <div className="card-header border-0 p-3">
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id="selectAll"
-                      checked={allSelected}
-                      onChange={toggleSelectAll}
-                    />
-                    <label className="form-check-label fw-medium" htmlFor="selectAll">
-                      Select all
-                    </label>
-                  </div>
+          {items.map((item) => (
+            <div
+              className={`cart-item ${removingId === item.productId ? 'cart-item--removing' : ''}`}
+              key={item.productId}
+              id={`cart-item-${item.productId}`}
+            >
+              <div className="cart-item-product">
+                <div className="cart-item-img">
+                  <img src={item.image} alt={item.productName} />
                 </div>
-
-                <ul className="list-group list-group-flush cart-list">
-                  {cartItems.length === 0 && (
-                    <li className="list-group-item p-4 text-center text-muted">
-                      Your cart is empty. Browse products and add items first.
-                    </li>
-                  )}
-
-                  {cartItems.map((item) => {
-                    const itemTotal = Number(item.price || 0) * Number(item.quantity || 1);
-
-                    return (
-                      <li className="list-group-item p-3 cart-item" key={item.id}>
-                        <div className="row g-3 align-items-center">
-                          <div className="col-auto">
-                            <input
-                              className="form-check-input item-check"
-                              type="checkbox"
-                              checked={selectedIds.includes(item.id)}
-                              onChange={() => toggleItem(item.id)}
-                            />
-                          </div>
-                          <div className="col d-flex align-items-center gap-3">
-                            <div className="col-auto">
-                              <div className="cart-thumb-wrap">
-                                <img
-                                  src={item.thumbnail || '/logo192.png'}
-                                  className="rounded img-thumb"
-                                  alt={item.name}
-                                />
-                              </div>
-                            </div>
-                            <div className="col">
-                              <h6 className="mb-1">{item.name}</h6>
-                              <div className="text-muted small">
-                                {item.brand ? `${item.brand}` : 'Gift product'}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="col-12 col-md-auto text-md-end">
-                            <div className="text-decoration-line-through small text-muted mb-1">
-                              ${formatMoney(itemTotal)}
-                            </div>
-                            <div className="fw-semibold price">${formatMoney(itemTotal)}</div>
-                            <div className="cart-quantity-row">
-                              <label htmlFor={`qty-${item.id}`} className="small text-muted me-2">
-                                Qty
-                              </label>
-                              <input
-                                id={`qty-${item.id}`}
-                                type="number"
-                                min="1"
-                                value={item.quantity}
-                                onChange={(event) => handleQuantityChange(item.id, event.target.value)}
-                                className="cart-qty-input"
-                              />
-                            </div>
-                            <button
-                              className="btn btn-sm btn-outline-danger mt-2"
-                              type="button"
-                              onClick={() => handleRemoveItem(item.id)}
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
+                <div className="cart-item-info">
+                  <h4 className="cart-item-name">{item.productName}</h4>
+                </div>
               </div>
 
-              <div className="mt-3 d-flex gap-2 flex-wrap">
-                <Link to="/" className="btn btn-outline-secondary">
-                  Continue shopping
-                </Link>
-                <button className="btn btn-outline-danger ms-auto" type="button" onClick={handleClearAll}>
-                  Clear all
-                </button>
+              <div className="cart-item-price">
+                <span className="cart-item-label">Price</span>
+                ${item.price.toFixed(2)}
               </div>
+
+              <div className="cart-item-qty">
+                <span className="cart-item-label">Qty</span>
+                <div className="cart-item-stepper">
+                  <button
+                    className="cart-item-stepper-btn"
+                    onClick={() => handleDecrement(item.productId)}
+                    disabled={item.quantity <= 1}
+                    aria-label="Decrease quantity"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  </button>
+                  <span className="cart-item-stepper-val">{item.quantity}</span>
+                  <button
+                    className="cart-item-stepper-btn"
+                    onClick={() => handleIncrement(item.productId)}
+                    aria-label="Increase quantity"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div className="cart-item-total">
+                <span className="cart-item-label">Total</span>
+                ${(item.price * item.quantity).toFixed(2)}
+              </div>
+
+              <button
+                className="cart-item-remove"
+                onClick={() => handleRemove(item.productId)}
+                aria-label={`Remove ${item.productName}`}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                  <line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>
+                </svg>
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Summary */}
+        <div className="cart-summary">
+          <div className="cart-summary-card">
+            <h3 className="cart-summary-title">Order Summary</h3>
+
+            <div className="cart-summary-row">
+              <span>Subtotal ({totalCount} items)</span>
+              <span className="cart-summary-val">${totalPrice.toFixed(2)}</span>
+            </div>
+            <div className="cart-summary-row">
+              <span>Shipping</span>
+              <span className="cart-summary-val cart-summary-free">FREE</span>
+            </div>
+            <div className="cart-summary-divider" />
+            <div className="cart-summary-row cart-summary-row--total">
+              <span>Total</span>
+              <span className="cart-summary-val">${totalPrice.toFixed(2)}</span>
             </div>
 
-            <aside className="col-lg-4">
-              <div className="card shadow-sm border-0 rounded-4 position-sticky top-20">
-                <div className="card-body">
-                  <h5 className="card-title mb-3">Order Summary</h5>
-                  <div className="d-flex justify-content-between small mb-2">
-                    <span>Selected items</span>
-                    <span>{selectedItems.length}</span>
-                  </div>
-                  <div className="d-flex justify-content-between small mb-2">
-                    <span>Subtotal</span>
-                    <span>${formatMoney(subtotal)}</span>
-                  </div>
-                  <div className="d-flex justify-content-between small mb-2">
-                    <span>Discount</span>
-                    <span>${formatMoney(discount)}</span>
-                  </div>
-                  <div className="d-flex justify-content-between small mb-2">
-                    <span>Tax</span>
-                    <span>${formatMoney(tax)}</span>
-                  </div>
-                  <hr />
-                  <div className="d-flex justify-content-between fw-semibold mb-3">
-                    <span>Total</span>
-                    <span>${formatMoney(grandTotal)}</span>
-                  </div>
+            <Link to="/orders" className="cart-summary-checkout">
+              Proceed to Checkout
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </Link>
 
-                  <div className="mb-3">
-                    <label htmlFor="coupon" className="form-label small">Coupon code</label>
-                    <div className="input-group">
-                      <input
-                        id="coupon"
-                        type="text"
-                        className="form-control"
-                        placeholder="ENTERCODE…"
-                        value={coupon}
-                        onChange={(event) => setCoupon(event.target.value)}
-                      />
-                      <button className="btn btn-outline-secondary" type="button">
-                        Apply
-                      </button>
-                    </div>
-                  </div>
+            <Link to="/" className="cart-summary-continue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+              Continue Shopping
+            </Link>
 
-                  <div className="mb-3">
-                    <label className="form-label small">Payment method</label>
-                    <div className="list-group">
-                      <label className="list-group-item">
-                        <input
-                          className="form-check-input me-2"
-                          type="radio"
-                          name="payment_method"
-                          value="momo"
-                          checked={paymentMethod === 'momo'}
-                          onChange={() => setPaymentMethod('momo')}
-                        />
-                        MoMo QR
-                      </label>
-                    </div>
-                  </div>
-
-                  <button id="btnCheckout" className="btn btn-primary w-100 btn-lg" type="submit">
-                    Proceed to checkout
-                  </button>
-
-                  <p className="small text-muted mt-3 mb-0">
-                    By clicking “Proceed to checkout”, you agree to our Terms of Service and Refund Policy.
-                  </p>
-                </div>
-              </div>
-            </aside>
+            <button className="cart-summary-clear" onClick={handleClear}>
+              Clear Cart
+            </button>
           </div>
-        </form>
+        </div>
       </div>
-    </section>
-  );
+    </div>
+  )
 }
 
-export default CartPage;
+export default CartPage

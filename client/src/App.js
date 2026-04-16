@@ -5,30 +5,40 @@ import FooterMain from './components/footer/FooterMain';
 import Home from './components/home/Home';
 import ContactUs from './components/contact/ContactUs';
 import CreateOrderPage from './components/order/CreateOrderPage';
-import SignIn from './components/auth/SignIn';
-import SignUp from './components/auth/SignUp';
 import CartPage from './components/cart/CartPage';
-import PaymentResult from './components/payment/PaymentResult';
+import LoginPage from './components/auth/LoginPage';
+import RegisterPage from './components/auth/RegisterPage';
+import ProfilePage from './components/profile/ProfilePage';
+import ManagerDashboard from './components/manager/ManagerDashboard';
+import SearchResults from './components/search/SearchResults';
+import ProductsPage from './components/products/ProductsPage';
+import AboutUs from './components/about/AboutUs';
+import { AuthProvider } from './services/AuthContext';
 
 import React from 'react'
 
 function App() {
   return (
     <Router>
-      <div className="App">
-        <Header/>
-        <Routes>
-          <Route path="/" element={<Home/>}/>
-          <Route path="contact" element={<ContactUs/>}/>
-          <Route path="orders" element={<CreateOrderPage/>}/>
-          <Route path="signin" element={<SignIn/>}/>
-          <Route path="signup" element={<SignUp/>}/>
-          <Route path="cart" element={<CartPage/>}/>
-          <Route path="payment/return" element={<PaymentResult/>}/>
-          <Route path="payment-result" element={<PaymentResult/>}/>
-        </Routes>
-        <FooterMain/>
-      </div>      
+      <AuthProvider>
+        <div className="App">
+          <Header/>
+          <Routes>
+            <Route path="/" element={<Home/>}/>
+            <Route path="contact" element={<ContactUs/>}/>
+            <Route path="orders" element={<CreateOrderPage/>}/>
+            <Route path="cart" element={<CartPage/>}/>
+            <Route path="login" element={<LoginPage/>}/>
+            <Route path="register" element={<RegisterPage/>}/>
+            <Route path="manager" element={<ManagerDashboard/>}/>
+            <Route path="profile" element={<ProfilePage/>}/>
+            <Route path="search" element={<SearchResults/>}/>
+            <Route path="products" element={<ProductsPage/>}/>
+            <Route path="about-us" element={<AboutUs/>}/>
+          </Routes>
+          <FooterMain/>
+        </div>
+      </AuthProvider>
     </Router>
   )
 }

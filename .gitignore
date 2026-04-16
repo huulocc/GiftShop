@@ -106,3 +106,5 @@ dist
 Thumbs.db
 .agent
 /everything-claude-code
+
+.env

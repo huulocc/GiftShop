@@ -74,11 +74,26 @@
       line-height: 1;
       padding: 0 0.25rem;
     }
+
+    &-logout {
+      background: none;
+      border: none;
+      font-family: inherit;
+
+      &:hover {
+        background: rgba(239, 68, 68, 0.2) !important;
+        color: #fca5a5 !important;
+      }
+    }
   }
 }
 
 @media (max-width: 768px) {
   .top-bar-center {
+    display: none;
+  }
+
+  .top-bar-right-action-name {
     display: none;
   }
 }

@@ -24,7 +24,7 @@ function PaymentResult() {
       };
     }
 
-    return getLastPayment();
+    //return getLastPayment();
   }, [location.state, searchParams]);
 
   const success = payment?.payment_status === 'completed';

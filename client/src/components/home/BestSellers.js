@@ -29,7 +29,6 @@ function BestSellers() {
               name={items.name}
               price={items.price}
               status={items.status}
-              brand={items.brand.name}
               images={items.images[0].path}
             />
           </div>

@@ -1,0 +1,61 @@
+@import '../../styles/VariableStyle.scss';
+
+.about-us-page {
+  font-family: $font-base;
+  padding: 1.5rem 0 3rem;
+}
+
+.about-us-page__container {
+  width: min(1000px, 92%);
+  margin: 0 auto;
+}
+
+.about-us-page__hero {
+  margin-bottom: 1.5rem;
+
+  h1 {
+    margin: 0;
+    color: $text-primary;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 0.65rem 0 0;
+    color: $text-muted;
+    max-width: 760px;
+    line-height: 1.6;
+  }
+}
+
+.about-us-page__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.about-us-page__card {
+  background: $surface;
+  border: 1px solid $border-light;
+  border-radius: $radius-lg;
+  padding: 1rem;
+
+  h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+    color: $text-primary;
+  }
+
+  p {
+    margin: 0;
+    color: $text-muted;
+    line-height: 1.6;
+  }
+}
+
+@media (max-width: 640px) {
+  .about-us-page__hero h1 {
+    font-size: 1.5rem;
+  }
+}

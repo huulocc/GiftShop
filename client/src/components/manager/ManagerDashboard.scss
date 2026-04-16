@@ -1,0 +1,638 @@
+@import '../../styles/VariableStyle.scss';
+
+// ============================================================
+// Manager Dashboard — Shared Styles
+// Used by ManagerDashboard, CategoryManager, ProductManager
+// ============================================================
+
+// ── Page Layout ─────────────────────────────────────────
+
+.mgr-page {
+  min-height: calc(100vh - 200px);
+  padding: 2rem 1rem;
+  background: $bg-page;
+}
+
+.mgr-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+// ── Page Header ─────────────────────────────────────────
+
+.mgr-page-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: $gradient-primary;
+  border-radius: $radius-lg;
+  color: #fff;
+  box-shadow: $shadow-primary;
+
+  &-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: $radius-md;
+    backdrop-filter: blur(8px);
+    flex-shrink: 0;
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  h1 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin: 0;
+    font-family: $font-base;
+  }
+
+  p {
+    font-size: 0.85rem;
+    opacity: 0.85;
+    margin: 0.15rem 0 0;
+  }
+}
+
+// ── Tabs ────────────────────────────────────────────────
+
+.mgr-tabs {
+  display: flex;
+  gap: 0.25rem;
+  background: $bg-card;
+  border-radius: $radius-md $radius-md 0 0;
+  padding: 0.35rem 0.35rem 0;
+  box-shadow: $shadow-sm;
+}
+
+.mgr-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.7rem 1.25rem;
+  font-family: $font-base;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: $text-muted;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: $radius-sm $radius-sm 0 0;
+  cursor: pointer;
+  transition: $transition-fast;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    color: $text-primary;
+    background: rgba($primary, 0.04);
+  }
+
+  &--active {
+    color: $primary;
+    border-bottom-color: $primary;
+    background: rgba($primary, 0.06);
+  }
+}
+
+// ── Panel ───────────────────────────────────────────────
+
+.mgr-panel {
+  background: $bg-card;
+  border-radius: 0 0 $radius-md $radius-md;
+  padding: 1.5rem;
+  box-shadow: $shadow-sm;
+  min-height: 300px;
+}
+
+// ── Table ───────────────────────────────────────────────
+
+.mgr-table-wrap {
+  overflow-x: auto;
+  border-radius: $radius-sm;
+  border: 1px solid $border-light;
+}
+
+.mgr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+
+  thead {
+    background: $surface;
+
+    th {
+      padding: 0.7rem 0.75rem;
+      text-align: left;
+      font-weight: 600;
+      color: $text-secondary;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1.5px solid $border;
+      white-space: nowrap;
+    }
+  }
+
+  tbody tr {
+    transition: $transition-fast;
+
+    &:hover {
+      background: rgba($primary, 0.03);
+    }
+
+    &:not(:last-child) td {
+      border-bottom: 1px solid $border-light;
+    }
+  }
+
+  td {
+    padding: 0.65rem 0.75rem;
+    color: $text-primary;
+    vertical-align: middle;
+  }
+
+  &-name {
+    font-weight: 600;
+  }
+
+  &-desc {
+    color: $text-secondary;
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &-date {
+    color: $text-muted;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  &-price {
+    font-weight: 600;
+    font-family: $font-mono;
+  }
+
+  &-stock {
+    font-family: $font-mono;
+  }
+
+  &-empty {
+    text-align: center;
+    padding: 2rem !important;
+    color: $text-muted;
+    font-style: italic;
+  }
+
+  &-actions {
+    display: flex;
+    gap: 0.35rem;
+    white-space: nowrap;
+  }
+}
+
+// ── Buttons ─────────────────────────────────────────────
+
+.mgr-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 1rem;
+  font-family: $font-base;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: none;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: $transition-fast;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  &--primary {
+    color: #fff;
+    background: $gradient-primary;
+    box-shadow: 0 2px 8px rgba($primary, 0.3);
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba($primary, 0.4);
+    }
+  }
+
+  &--ghost {
+    color: $text-secondary;
+    background: transparent;
+    border: 1.5px solid $border;
+
+    &:hover {
+      background: $surface;
+      border-color: $text-muted;
+    }
+  }
+
+  &--danger {
+    color: #fff;
+    background: $gradient-danger;
+    box-shadow: 0 2px 8px rgba(#e53e3e, 0.3);
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(#e53e3e, 0.4);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+}
+
+.mgr-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  background: none;
+  border: 1.5px solid $border;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: $transition-fast;
+  color: $text-muted;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  &--edit:hover {
+    color: $primary;
+    border-color: $primary;
+    background: $primary-light;
+  }
+
+  &--delete:hover {
+    color: #e53e3e;
+    border-color: #e53e3e;
+    background: #fff5f5;
+  }
+
+  &--save {
+    color: $success-dark;
+    border-color: $success;
+    font-weight: 700;
+    font-size: 0.85rem;
+
+    &:hover { background: $success-light; }
+  }
+
+  &--cancel {
+    color: $text-muted;
+    font-weight: 700;
+    font-size: 0.85rem;
+
+    &:hover { color: #e53e3e; border-color: #e53e3e; }
+  }
+}
+
+// ── Badges ──────────────────────────────────────────────
+
+.mgr-badge {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: $radius-full;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+
+  &--general {
+    background: #eef2ff;
+    color: #5a67d8;
+  }
+
+  &--handmade {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  &--digital {
+    background: #e0f2fe;
+    color: #0369a1;
+  }
+}
+
+// ── Stock Editor ────────────────────────────────────────
+
+.mgr-stock-editor {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.mgr-stock-input {
+  width: 60px;
+  padding: 0.25rem 0.35rem;
+  font-size: 0.82rem;
+  font-family: $font-mono;
+  border: 1.5px solid $primary;
+  border-radius: 4px;
+  outline: none;
+  text-align: center;
+}
+
+.mgr-stock-val {
+  cursor: pointer;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  transition: $transition-fast;
+
+  &:hover {
+    background: $primary-light;
+    color: $primary;
+  }
+
+  &--zero {
+    color: #e53e3e;
+    font-weight: 600;
+  }
+}
+
+// ── Pagination ──────────────────────────────────────────
+
+.mgr-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  font-size: 0.82rem;
+  color: $text-secondary;
+
+  button {
+    padding: 0.35rem 0.75rem;
+    font-family: $font-base;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: $primary;
+    background: none;
+    border: 1.5px solid $border;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    transition: $transition-fast;
+
+    &:hover:not(:disabled) {
+      background: $primary-light;
+      border-color: $primary;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// ── Modal ───────────────────────────────────────────────
+
+.mgr-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: mgrFadeIn 0.2s ease;
+}
+
+.mgr-modal {
+  background: $bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+  width: 100%;
+  max-width: 440px;
+  animation: mgrSlideUp 0.25s ease;
+
+  &--sm { max-width: 380px; }
+  &--lg { max-width: 540px; }
+
+  &-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.25rem 0.75rem;
+    border-bottom: 1px solid $border-light;
+
+    h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin: 0;
+    }
+  }
+
+  &-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    color: $text-muted;
+    cursor: pointer;
+    border-radius: $radius-sm;
+    transition: $transition-fast;
+
+    &:hover {
+      background: $surface;
+      color: $text-primary;
+    }
+  }
+
+  &-form {
+    padding: 1rem 1.25rem;
+  }
+
+  &-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem 1.25rem;
+  }
+}
+
+// ── Form Elements ───────────────────────────────────────
+
+.mgr-form-group {
+  margin-bottom: 0.85rem;
+
+  label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: $text-primary;
+    margin-bottom: 0.3rem;
+  }
+
+  input, textarea, select {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    font-family: $font-base;
+    font-size: 0.85rem;
+    color: $text-primary;
+    background: $surface;
+    border: 1.5px solid $border;
+    border-radius: $radius-sm;
+    outline: none;
+    transition: $transition-fast;
+
+    &::placeholder { color: $text-muted; }
+
+    &:focus {
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba($primary, 0.12);
+      background: #fff;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+}
+
+.mgr-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+// ── Alert ───────────────────────────────────────────────
+
+.mgr-alert {
+  padding: 0.6rem 0.85rem;
+  border-radius: $radius-sm;
+  font-size: 0.82rem;
+  margin-bottom: 1rem;
+
+  &--error {
+    background: $danger-light;
+    color: $danger-dark;
+    border: 1px solid rgba($danger, 0.3);
+  }
+}
+
+// ── Loading / Spinner ───────────────────────────────────
+
+.mgr-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 3rem 1rem;
+  color: $text-muted;
+  font-size: 0.88rem;
+}
+
+.mgr-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid $border;
+  border-top-color: $primary;
+  border-radius: $radius-full;
+  animation: mgrSpin 0.6s linear infinite;
+}
+
+// ── Access Denied ───────────────────────────────────────
+
+.mgr-denied {
+  text-align: center;
+  padding: 4rem 1rem;
+
+  &-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    background: $danger-light;
+    border-radius: $radius-full;
+    margin-bottom: 1rem;
+
+    svg {
+      width: 32px;
+      height: 32px;
+      stroke: #e53e3e;
+    }
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    color: $text-primary;
+    margin: 0 0 0.35rem;
+  }
+
+  p {
+    color: $text-secondary;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+}
+
+// ── Animations ──────────────────────────────────────────
+
+@keyframes mgrFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes mgrSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes mgrSpin {
+  to { transform: rotate(360deg); }
+}
+
+// ── Responsive ──────────────────────────────────────────
+
+@media (max-width: 640px) {
+  .mgr-page-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .mgr-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .mgr-tabs {
+    overflow-x: auto;
+  }
+
+  .mgr-modal {
+    max-width: 100% !important;
+  }
+}

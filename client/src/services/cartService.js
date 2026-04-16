@@ -1,90 +1,84 @@
-const STORAGE_KEY = 'giftshop-cart';
-const LAST_PAYMENT_KEY = 'giftshop-last-payment';
+import axios from 'axios'
 
-const isBrowser = typeof window !== 'undefined';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api'
 
-function readJson(key, fallback) {
-  if (!isBrowser) return fallback;
-  try {
-    const raw = window.localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
-  }
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+
+/**
+ * Cart API Service
+ * Handles all HTTP calls to the cart endpoints
+ *
+ * Endpoints:
+ *   GET    /cart/:customerId
+ *   POST   /cart/:customerId/items
+ *   PATCH  /cart/:customerId/items/:productId
+ *   DELETE /cart/:customerId/items/:productId
+ *   DELETE /cart/:customerId
+ */
+const cartService = {
+  /**
+   * Get the active cart for a customer
+   * @param {string} customerId
+   * @returns {Promise<Object>} cart data
+   */
+  async getCart(customerId) {
+    const response = await apiClient.get(`/cart/${customerId}`)
+    return response.data
+  },
+
+  /**
+   * Add an item to the cart
+   * @param {string} customerId
+   * @param {{ productId: string, quantity: number, unitPrice: number }} itemData
+   * @returns {Promise<Object>} updated cart
+   */
+  async addItem(customerId, itemData) {
+    const response = await apiClient.post(`/cart/${customerId}/items`, itemData)
+    return response.data
+  },
+
+  /**
+   * Update the quantity of a cart item
+   * @param {string} customerId
+   * @param {string} productId
+   * @param {number} quantity
+   * @returns {Promise<Object>} updated cart
+   */
+  async updateItemQuantity(customerId, productId, quantity) {
+    const response = await apiClient.patch(
+      `/cart/${customerId}/items/${productId}`,
+      { quantity }
+    )
+    return response.data
+  },
+
+  /**
+   * Remove an item from the cart
+   * @param {string} customerId
+   * @param {string} productId
+   * @returns {Promise<Object>} updated cart
+   */
+  async removeItem(customerId, productId) {
+    const response = await apiClient.delete(
+      `/cart/${customerId}/items/${productId}`
+    )
+    return response.data
+  },
+
+  /**
+   * Clear the entire cart
+   * @param {string} customerId
+   * @returns {Promise<Object>} empty cart
+   */
+  async clearCart(customerId) {
+    const response = await apiClient.delete(`/cart/${customerId}`)
+    return response.data
+  },
 }
 
-function writeJson(key, value) {
-  if (!isBrowser) return;
-  window.localStorage.setItem(key, JSON.stringify(value));
-}
-
-export function getCartItems() {
-  return readJson(STORAGE_KEY, []);
-}
-
-export function saveCartItems(items) {
-  writeJson(STORAGE_KEY, items);
-  return items;
-}
-
-export function addCartItem(item) {
-  const currentItems = getCartItems();
-  const existingIndex = currentItems.findIndex((currentItem) => String(currentItem.id) === String(item.id));
-
-  const normalizedItem = {
-    id: item.id,
-    name: item.name,
-    price: Number(item.price) || 0,
-    thumbnail: item.thumbnail || '',
-    brand: item.brand || '',
-    category: item.category || '',
-    quantity: 1,
-  };
-
-  if (existingIndex >= 0) {
-    const updatedItems = currentItems.map((currentItem, index) => (
-      index === existingIndex
-        ? { ...currentItem, quantity: Number(currentItem.quantity || 1) + 1 }
-        : currentItem
-    ));
-    return saveCartItems(updatedItems);
-  }
-
-  return saveCartItems([...currentItems, normalizedItem]);
-}
-
-export function updateCartItemQuantity(itemId, quantity) {
-  const nextQuantity = Math.max(1, Number(quantity) || 1);
-  const updatedItems = getCartItems().map((item) => (
-    String(item.id) === String(itemId)
-      ? { ...item, quantity: nextQuantity }
-      : item
-  ));
-  return saveCartItems(updatedItems);
-}
-
-export function removeCartItem(itemId) {
-  const updatedItems = getCartItems().filter((item) => String(item.id) !== String(itemId));
-  return saveCartItems(updatedItems);
-}
-
-export function clearCart() {
-  return saveCartItems([]);
-}
-
-export function getCartCount() {
-  return getCartItems().reduce((total, item) => total + Number(item.quantity || 1), 0);
-}
-
-export function calculateCartSubtotal(items = []) {
-  return items.reduce((total, item) => total + Number(item.price || 0) * Number(item.quantity || 1), 0);
-}
-
-export function saveLastPayment(payment) {
-  writeJson(LAST_PAYMENT_KEY, payment);
-  return payment;
-}
-
-export function getLastPayment() {
-  return readJson(LAST_PAYMENT_KEY, null);
-}
+export default cartService
