@@ -1,10 +1,6 @@
 const path = require('path')
 const dotenv = require('dotenv')
-<<<<<<< Updated upstream
-const app = require('./app')
-=======
 const fs = require('fs')
->>>>>>> Stashed changes
 
 const envCandidates = [
   path.join(__dirname, '..', '.env'),
@@ -17,6 +13,8 @@ if (envPath) {
 } else {
   dotenv.config()
 }
+
+const app = require('./app')
 
 const PORT = process.env.PORT || 5000
 

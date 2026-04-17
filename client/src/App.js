@@ -5,9 +5,6 @@ import FooterMain from './components/footer/FooterMain';
 import Home from './components/home/Home';
 import ContactUs from './components/contact/ContactUs';
 import CreateOrderPage from './components/order/CreateOrderPage';
-<<<<<<< Updated upstream
-import ProductData from './components/products/Products/Products.json'
-=======
 import CartPage from './components/cart/CartPage';
 import LoginPage from './components/auth/LoginPage';
 import RegisterPage from './components/auth/RegisterPage';
@@ -21,24 +18,12 @@ import ProductDetailPage from './components/products/ProductDetailPage/ProductDe
 import { AuthProvider } from './services/AuthContext';
 import { CompareProvider } from './contexts/CompareContext';
 import { CheckoutProvider } from './contexts/CheckoutContext';
->>>>>>> Stashed changes
 
 import React from 'react'
 
 function App() {
   return (
     <Router>
-<<<<<<< Updated upstream
-      <div className="App">
-        <Header/>
-        <Routes>
-          <Route path="/" element={<Home/>}/>
-          <Route path="contact" element={<ContactUs/>}/>
-          <Route path="orders" element={<CreateOrderPage/>}/>
-        </Routes>
-        <FooterMain/>
-      </div>      
-=======
       <AuthProvider>
         <CompareProvider>
           <CheckoutProvider>
@@ -64,7 +49,6 @@ function App() {
           </CheckoutProvider>
         </CompareProvider>
       </AuthProvider>
->>>>>>> Stashed changes
     </Router>
   )
 }
