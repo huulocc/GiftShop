@@ -5,10 +5,13 @@ import Search from "./Search";
 import LogoMain from "./LogoMain"
 import CartManager from "../../services/CartManager"
 import { useAuth } from "../../services/AuthContext"
+import { useCompare } from "../../contexts/CompareContext"
 
 function TopBars({handleSeachProduct}) {
   const cart = CartManager.getInstance()
+  const { compareList } = useCompare()
   const [cartCount, setCartCount] = useState(cart.getTotalCount())
+  const [compareCount, setCompareCount] = useState(compareList.length)
   const { user, isAuthenticated, logout } = useAuth()
 
   const syncCount = useCallback(() => {
@@ -19,6 +22,11 @@ function TopBars({handleSeachProduct}) {
     const unsubscribe = cart.subscribe(syncCount)
     return unsubscribe
   }, [cart, syncCount])
+
+  // Update compare count when compare list changes
+  useEffect(() => {
+    setCompareCount(compareList.length)
+  }, [compareList])
 
   const handleLogout = async () => {
     await logout()
@@ -80,6 +88,14 @@ function TopBars({handleSeachProduct}) {
           </svg>
           {cartCount > 0 && (
             <span className="top-bar-right-badge">{cartCount}</span>
+          )}
+        </Link>
+        <Link to='/compare' className="top-bar-right-action">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="12 3 20 9 20 21 4 21 4 9 12 3"/>
+          </svg>
+          {compareCount > 0 && (
+            <span className="top-bar-right-badge">{compareCount}</span>
           )}
         </Link>
         {/* <Link to='/stores' className="top-bar-right-action">

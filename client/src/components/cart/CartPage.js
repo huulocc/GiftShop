@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import CartManager from '../../services/CartManager'
+import { useCheckout } from '../../contexts/CheckoutContext'
 import './CartPage.scss'
 
 /**
@@ -11,6 +12,8 @@ import './CartPage.scss'
  */
 function CartPage() {
   const cart = CartManager.getInstance()
+  const navigate = useNavigate()
+  const { setCheckoutItems } = useCheckout()
   const [items, setItems] = useState(cart.getItems())
   const [removingId, setRemovingId] = useState(null)
 
@@ -45,6 +48,13 @@ function CartPage() {
 
   const handleClear = () => {
     cart.clearCart()
+  }
+
+  const handleProceedToCheckout = () => {
+    // Store cart items in checkout context
+    setCheckoutItems(items)
+    // Navigate to orders page
+    navigate('/orders')
   }
 
   const totalCount = cart.getTotalCount()
@@ -185,12 +195,12 @@ function CartPage() {
               <span className="cart-summary-val">${totalPrice.toFixed(2)}</span>
             </div>
 
-            <Link to="/orders" className="cart-summary-checkout">
+            <button onClick={handleProceedToCheckout} className="cart-summary-checkout">
               Proceed to Checkout
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
-            </Link>
+            </button>
 
             <Link to="/" className="cart-summary-continue">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -198,10 +208,6 @@ function CartPage() {
               </svg>
               Continue Shopping
             </Link>
-
-            <button className="cart-summary-clear" onClick={handleClear}>
-              Clear Cart
-            </button>
           </div>
         </div>
       </div>

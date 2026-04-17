@@ -5,11 +5,15 @@ import detailsicon from '../../../stories/icons/more-information.png'
 import carticon from '../../../stories/icons/add-to-cart.png'
 import compareicon from '../../../stories/icons/compare.png'
 import CartManager from '../../../services/CartManager'
+import { useCompare } from '../../../contexts/CompareContext'
 
 
 function ProductDetailsItems(props) {
     const item=props;
+    const { addToCompare, removeFromCompare, isInCompare } = useCompare()
     const [showToast, setShowToast] = useState(false)
+    const [toastMessage, setToastMessage] = useState('')
+    const inCompare = isInCompare(item.id)
 
     const handleAddToCart = () => {
       const cart = CartManager.getInstance()
@@ -21,6 +25,27 @@ function ProductDetailsItems(props) {
       })
 
       // Show toast feedback
+      setToastMessage('Added to cart!')
+      setShowToast(true)
+      setTimeout(() => setShowToast(false), 2500)
+    }
+
+    const handleCompare = () => {
+      if (inCompare) {
+        removeFromCompare(item.id)
+        setToastMessage('Removed from compare')
+      } else {
+        addToCompare({
+          productId: item.id,
+          productName: item.name,
+          price: item.price,
+          categoryName: item.categories,
+          image: item.images,
+          description: item.description || '',
+          stockQuantity: item.stock || 0,
+        })
+        setToastMessage('Added to compare!')
+      }
       setShowToast(true)
       setTimeout(() => setShowToast(false), 2500)
     }
@@ -47,9 +72,12 @@ function ProductDetailsItems(props) {
                 <p  className='productdetails-button-p' >Add To Cart</p>
                 <img src={carticon} alt="carticon" className='productdetails-button-icon' />
             </button>
-            <button className='productdetails-button-addToCart'>
-                <p  className='productdetails-button-p'>Compare</p>
-                <img src={compareicon} alt="compareicon" className='productdetails-button-icon' />
+            <button className='productdetails-button-addToCart' onClick={handleCompare} style={{
+              backgroundColor: inCompare ? '#667eea' : undefined,
+              opacity: inCompare ? 0.9 : 1,
+            }}>
+              <p  className='productdetails-button-p'>{inCompare ? 'In Compare' : 'Compare'}</p>
+              <img src={compareicon} alt="compareicon" className='productdetails-button-icon' />
             </button>
         </div>
 
@@ -59,7 +87,7 @@ function ProductDetailsItems(props) {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 6L9 17l-5-5"/>
             </svg>
-            Added to cart!
+            {toastMessage}
           </div>
         )}
     </div>
