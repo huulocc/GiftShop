@@ -3,6 +3,7 @@ import OrderBuilder from '../../builders/OrderBuilder'
 import orderService from '../../services/orderService'
 import productService from '../../services/productService'
 import { useAuth } from '../../services/AuthContext'
+import { useCheckout } from '../../contexts/CheckoutContext'
 import './OrderForm.scss'
 
 /**
@@ -14,9 +15,12 @@ import './OrderForm.scss'
  *
  * Products are fetched from the database via /api/products (not a static JSON).
  * Uses the Builder pattern (OrderBuilder) to construct the payload.
+ * 
+ * Also supports pre-filling items from CheckoutContext (when coming from cart).
  */
 function OrderForm({ onOrderCreated }) {
   const { user } = useAuth()
+  const { getCheckoutItems, clearCheckout } = useCheckout()
   const isManager = user?.roleCode === 'manager'
 
   // ── Customer info ───────────────────────────────────────
@@ -83,6 +87,23 @@ function OrderForm({ onOrderCreated }) {
     }
     loadProducts()
     return () => { cancelled = true }
+  }, [])
+
+  // ── Pre-fill from checkout (cart items) ──────────────────
+  useEffect(() => {
+    const checkoutItems = getCheckoutItems()
+    if (checkoutItems && checkoutItems.length > 0) {
+      // Transform cart items to order items format
+      const formattedItems = checkoutItems.map((item) => ({
+        productId: item.productId,
+        productName: item.productName,
+        quantity: item.quantity,
+        price: item.price,
+        maxStock: 9999, // Default since we don't have stock info from cart
+      }))
+      setSelectedItems(formattedItems)
+      clearCheckout()
+    }
   }, [])
 
   // ── Filter products by search term ────────────────────────
