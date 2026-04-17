@@ -16,8 +16,8 @@ class ProductController {
    */
   async getAll(req, res) {
     try {
-      const { categoryId, search, page, limit } = req.query
-      const result = await productService.getAll({ categoryId, search, page, limit })
+      const { categoryId, search, page, limit, sort } = req.query
+      const result = await productService.getAll({ categoryId, search, page, limit, sort })
       return res.status(200).json({
         success: true,
         data: result.products,

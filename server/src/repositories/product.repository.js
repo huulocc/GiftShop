@@ -12,10 +12,10 @@ const pool = require('../config/db')
 class ProductRepository {
   /**
    * Get products with optional filters
-   * @param {{ categoryId?: string, search?: string, page?: number, limit?: number }} filters
+   * @param {{ categoryId?: string, search?: string, sort?: string, page?: number, limit?: number }} filters
    * @returns {Promise<{ products: Array, total: number }>}
    */
-  async findAll({ categoryId, search, page = 1, limit = 50 } = {}) {
+  async findAll({ categoryId, search, sort, page = 1, limit = 50 } = {}) {
     const conditions = ['p.is_active = TRUE']
     const params = []
     let paramIdx = 1
@@ -40,6 +40,18 @@ class ProductRepository {
     )
     const total = parseInt(countResult.rows[0].cnt, 10)
 
+    let orderByClause = 'ORDER BY p.created_at DESC'
+    if (sort === 'best_seller') {
+      orderByClause = `
+        ORDER BY (
+          SELECT COALESCE(SUM(oi.quantity), 0) 
+          FROM order_items oi 
+          JOIN orders o ON oi.order_id = o.order_id 
+          WHERE oi.product_id = p.product_id AND o.status != 'cancelled'
+        ) DESC, p.created_at DESC
+      `
+    }
+
     // Fetch page
     const result = await pool.query(
       `SELECT p.*, c.category_name,
@@ -49,7 +61,7 @@ class ProductRepository {
        LEFT JOIN users u1 ON p.created_by = u1.user_id
        LEFT JOIN users u2 ON p.updated_by = u2.user_id
        WHERE ${whereClause}
-       ORDER BY p.created_at DESC
+       ${orderByClause}
        LIMIT $${paramIdx++} OFFSET $${paramIdx++}`,
       [...params, limit, offset]
     )

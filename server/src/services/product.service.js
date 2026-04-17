@@ -11,13 +11,20 @@ const { ProductFactory, ProductType } = require('../models/product.model')
 class ProductService {
   /**
    * Get products with filters, wrapped via Factory
-   * @param {{ categoryId?: string, search?: string, page?: number, limit?: number }} filters
+   * @param {{ categoryId?: string, search?: string, sort?: string, page?: string|number, limit?: string|number }} options
    * @returns {Promise<{ products: Array, total: number, page: number, limit: number }>}
    */
-  async getAll(filters = {}) {
-    const page = parseInt(filters.page, 10) || 1
-    const limit = parseInt(filters.limit, 10) || 50
-    const { products, total } = await productRepository.findAll({ ...filters, page, limit })
+  async getAll({ categoryId, search, sort, page = 1, limit = 50 } = {}) {
+    const pageNum = parseInt(page, 10) || 1
+    const limitNum = parseInt(limit, 10) || 50
+
+    const { products, total } = await productRepository.findAll({
+      categoryId,
+      search,
+      sort,
+      page: pageNum,
+      limit: limitNum,
+    })
 
     // Wrap each product via Factory Method
     const wrapped = products.map((p) => ProductFactory.create(p.productType, p).toJSON())

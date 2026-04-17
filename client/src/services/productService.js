@@ -17,6 +17,7 @@ const productService = {
     const params = new URLSearchParams()
     if (filters.categoryId) params.append('categoryId', filters.categoryId)
     if (filters.search) params.append('search', filters.search)
+    if (filters.sort) params.append('sort', filters.sort)
     if (filters.page) params.append('page', filters.page)
     if (filters.limit) params.append('limit', filters.limit)
     const response = await apiClient.get(`/products?${params.toString()}`)
