@@ -7,6 +7,7 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // send session cookies
 })
 
 /**
@@ -72,6 +73,16 @@ const orderService = {
    */
   async updateOrder(id, updateData) {
     const response = await apiClient.put(`/orders/${id}`, updateData)
+    return response.data
+  },
+
+  /**
+   * Get list of customers (manager only) with optional search
+   * @param {string} [search] - Optional name/email search string
+   * @returns {Promise<Array>} list of customer objects
+   */
+  async getCustomers(search = '') {
+    const response = await apiClient.get('/auth/customers', { params: { search } })
     return response.data
   },
 }

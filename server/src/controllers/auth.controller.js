@@ -146,6 +146,21 @@ class AuthController {
       return res.status(error.statusCode || 500).json({ success: false, error: error.message || 'Internal server error' })
     }
   }
+
+  /**
+   * GET /api/auth/customers
+   * Manager-only: returns list of all active customers for order creation
+   * Query: ?search=name_or_email
+   */
+  async getCustomers(req, res) {
+    try {
+      const { search = '' } = req.query
+      const customers = await authService.getCustomers(search)
+      return res.status(200).json({ success: true, data: customers })
+    } catch (error) {
+      return res.status(500).json({ success: false, error: 'Internal server error' })
+    }
+  }
 }
 
 module.exports = new AuthController()

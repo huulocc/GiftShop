@@ -1,5 +1,6 @@
 const express = require('express')
 const authController = require('../controllers/auth.controller')
+const { requireAuth, requireRole } = require('../middleware/auth.middleware')
 
 const router = express.Router()
 
@@ -17,4 +18,8 @@ router.post('/login', (req, res) => authController.login(req, res))
 router.post('/logout', (req, res) => authController.logout(req, res))
 router.get('/me', (req, res) => authController.getMe(req, res))
 router.post('/change-password', (req, res) => authController.changePassword(req, res))
+
+// Manager-only: list customers for order assignment
+router.get('/customers', requireAuth, requireRole('manager'), (req, res) => authController.getCustomers(req, res))
+
 module.exports = router

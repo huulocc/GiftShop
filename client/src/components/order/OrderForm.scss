@@ -168,6 +168,48 @@
 }
 
 /* ══════════════════════════════════════
+   SUCCESS TOAST
+══════════════════════════════════════ */
+.order-success-toast {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.875rem 1.25rem;
+  background: $success-light;
+  border: 1.5px solid $success;
+  border-radius: $radius-md;
+  animation: slideDown 0.3s ease;
+  box-shadow: 0 4px 16px rgba($success, 0.2);
+
+  > svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: $success;
+    flex-shrink: 0;
+  }
+
+  > span {
+    flex: 1;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: darken($success, 20%);
+  }
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: $text-muted;
+  cursor: pointer;
+  padding: 0 0.1rem;
+  transition: color 0.15s ease;
+
+  &:hover { color: $text-primary; }
+}
+
+/* ══════════════════════════════════════
    FORM SECTIONS
 ══════════════════════════════════════ */
 .form-section {
@@ -291,6 +333,85 @@
 }
 
 /* ══════════════════════════════════════
+   PRODUCT SEARCH BAR
+══════════════════════════════════════ */
+.product-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  background: $surface;
+  margin-bottom: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus-within {
+    border-color: $primary;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12);
+  }
+
+  > svg {
+    width: 1rem;
+    height: 1rem;
+    color: $text-muted;
+    flex-shrink: 0;
+  }
+}
+
+.product-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
+  color: $text-primary;
+  font-family: $font-base;
+  background: transparent;
+
+  &::placeholder { color: $text-muted; }
+}
+
+.product-search-clear {
+  background: none;
+  border: none;
+  padding: 0.2rem;
+  cursor: pointer;
+  color: $text-muted;
+  display: flex;
+  align-items: center;
+  border-radius: 50%;
+  transition: $transition-fast;
+
+  svg { width: 0.85rem; height: 0.85rem; }
+
+  &:hover {
+    background: rgba($danger, 0.1);
+    color: $danger;
+  }
+}
+
+/* ══════════════════════════════════════
+   PRODUCT EMPTY STATE
+══════════════════════════════════════ */
+.product-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2.5rem 1rem;
+  color: $text-muted;
+  font-size: 0.9rem;
+  text-align: center;
+
+  svg {
+    width: 2.5rem;
+    height: 2.5rem;
+    opacity: 0.4;
+  }
+}
+
+/* ══════════════════════════════════════
    PRODUCT SELECTOR
 ══════════════════════════════════════ */
 .product-selector {
@@ -313,7 +434,7 @@
   background: $surface;
   outline: none;
 
-  &:hover {
+  &:hover:not(.out-of-stock) {
     border-color: $primary;
     background: $primary-light;
     transform: translateY(-2px);
@@ -330,6 +451,42 @@
     cursor: default;
     box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.15);
   }
+
+  &.out-of-stock {
+    opacity: 0.55;
+    cursor: not-allowed;
+
+    &:hover {
+      transform: none;
+      box-shadow: none;
+      border-color: $border;
+      background: $surface;
+    }
+  }
+}
+
+/* Skeleton loader */
+.product-skeleton {
+  cursor: default !important;
+  pointer-events: none;
+
+  .skeleton-category,
+  .skeleton-name,
+  .skeleton-price {
+    border-radius: $radius-sm;
+    background: linear-gradient(90deg, $border-light 25%, rgba($border-light, 0.4) 50%, $border-light 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  .skeleton-category { height: 10px; width: 55%; margin-bottom: 0.3rem; }
+  .skeleton-name     { height: 16px; width: 80%; margin-bottom: 0.4rem; }
+  .skeleton-price    { height: 18px; width: 50%; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .product-option-check {
@@ -352,6 +509,22 @@
   }
 }
 
+/* Out of Stock overlay badge */
+.product-option-badge-oos {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $danger;
+  background: $danger-light;
+  border: 1px solid rgba($danger, 0.3);
+  border-radius: 999px;
+  padding: 0.15rem 0.45rem;
+}
+
 .product-option-category-tag {
   font-size: 0.65rem;
   text-transform: uppercase;
@@ -367,13 +540,33 @@
   line-height: 1.3;
 }
 
+.product-option-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin-top: auto;
+}
+
 .product-option-price {
   font-weight: 700;
   color: $primary;
   font-size: 0.95rem;
   font-family: $font-mono;
-  margin-top: auto;
 }
+
+.product-option-stock {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: $text-muted;
+  white-space: nowrap;
+
+  &.low {
+    color: $danger;
+    font-weight: 700;
+  }
+}
+
 
 /* ══════════════════════════════════════
    CART / SELECTED ITEMS TABLE
@@ -945,4 +1138,261 @@
     padding: 0.5rem 0.5rem;
     font-size: 0.8rem;
   }
+}
+
+/* ══════════════════════════════════════
+   READ-ONLY INPUT BADGE (Customer role)
+══════════════════════════════════════ */
+.form-input--readonly {
+  background: $surface !important;
+  color: $text-secondary !important;
+  cursor: default;
+  border-color: $border-light !important;
+
+  &:focus {
+    border-color: $border-light !important;
+    box-shadow: none !important;
+  }
+}
+
+.form-field-badge {
+  position: absolute;
+  top: 0.45rem;
+  right: 0.6rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: $primary;
+  background: $primary-light;
+  border: 1px solid rgba($primary, 0.25);
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════
+   CUSTOMER PICKER (Manager role)
+══════════════════════════════════════ */
+.customer-picker {
+  position: relative;
+}
+
+/* Selected customer card */
+.selected-customer-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.875rem 1rem;
+  border: 1.5px solid $success;
+  border-radius: $radius-md;
+  background: $success-light;
+  box-shadow: 0 0 0 3px rgba($success, 0.12);
+  animation: slideDown 0.25s ease;
+}
+
+.selected-customer-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: $gradient-primary;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+}
+
+.selected-customer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.selected-customer-name {
+  font-weight: 700;
+  font-size: 0.925rem;
+  color: $text-primary;
+}
+
+.selected-customer-email {
+  font-size: 0.8rem;
+  color: $text-muted;
+}
+
+.selected-customer-phone {
+  font-size: 0.78rem;
+  color: $text-muted;
+  font-family: $font-mono;
+}
+
+.btn-clear-customer {
+  background: none;
+  border: 1.5px solid transparent;
+  border-radius: $radius-sm;
+  color: $text-muted;
+  cursor: pointer;
+  padding: 0.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: $transition-fast;
+  flex-shrink: 0;
+
+  svg {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  &:hover {
+    background: rgba($danger, 0.1);
+    border-color: rgba($danger, 0.3);
+    color: $danger;
+  }
+}
+
+/* Search input */
+.customer-search-wrapper {
+  position: relative;
+}
+
+.customer-search-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.customer-search-icon {
+  position: absolute;
+  left: 0.875rem;
+  width: 1rem;
+  height: 1rem;
+  color: $text-muted;
+  pointer-events: none;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.customer-search-input {
+  width: 100%;
+  padding: 0.875rem 2.75rem 0.875rem 2.6rem;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  font-size: 0.925rem;
+  color: $text-primary;
+  background: $surface;
+  outline: none;
+  font-family: $font-base;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &::placeholder { color: $text-muted; }
+
+  &:focus {
+    border-color: $primary;
+    background: $bg-card;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12);
+  }
+}
+
+.customer-search-spinner {
+  position: absolute;
+  right: 0.875rem;
+  width: 1rem;
+  height: 1rem;
+  color: $primary;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Dropdown list */
+.customer-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: $bg-card;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  box-shadow: $shadow-lg;
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem;
+  z-index: 1000;
+  max-height: 260px;
+  overflow-y: auto;
+  animation: slideDown 0.18s ease;
+
+  &--empty {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.25rem;
+    color: $text-muted;
+    font-size: 0.875rem;
+    font-style: italic;
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+      color: $text-muted;
+      flex-shrink: 0;
+    }
+  }
+}
+
+.customer-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: $transition-fast;
+  outline: none;
+
+  &:hover,
+  &:focus {
+    background: $primary-light;
+  }
+}
+
+.customer-dropdown-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: $gradient-primary;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.customer-dropdown-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  min-width: 0;
+}
+
+.customer-dropdown-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: $text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.customer-dropdown-email {
+  font-size: 0.75rem;
+  color: $text-muted;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

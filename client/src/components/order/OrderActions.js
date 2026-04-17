@@ -9,14 +9,15 @@ import './OrderActions.scss'
  * via the API service.
  */
 function OrderActions({ order, onOrderUpdated }) {
+  const orderId = order.orderId || order.id || ''
   const [loading, setLoading] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [isEditing, setIsEditing] = useState(false)
   const [editData, setEditData] = useState({
-    customerName: order.customerName,
-    email: order.email,
-    phone: order.phone,
+    customerName: order.customerNameSnapshot || order.customerName || '',
+    email: order.customerEmailSnapshot || order.email || '',
+    phone: order.customerPhoneSnapshot || order.phone || '',
     giftMessage: order.giftMessage || '',
   })
 
@@ -32,7 +33,7 @@ function OrderActions({ order, onOrderUpdated }) {
     setLoading('place')
     setError('')
     try {
-      const result = await orderService.placeOrder(order.id)
+      const result = await orderService.placeOrder(orderId)
       if (result.success && onOrderUpdated) {
         onOrderUpdated(result.data)
         showSuccess('Order placed successfully!')
@@ -51,7 +52,7 @@ function OrderActions({ order, onOrderUpdated }) {
     setLoading('cancel')
     setError('')
     try {
-      const result = await orderService.cancelOrder(order.id)
+      const result = await orderService.cancelOrder(orderId)
       if (result.success && onOrderUpdated) {
         onOrderUpdated(result.data)
         showSuccess('Order cancelled.')
@@ -70,7 +71,12 @@ function OrderActions({ order, onOrderUpdated }) {
     setLoading('update')
     setError('')
     try {
-      const result = await orderService.updateOrder(order.id, editData)
+      const result = await orderService.updateOrder(orderId, {
+        customerNameSnapshot: editData.customerName,
+        customerEmailSnapshot: editData.email,
+        customerPhoneSnapshot: editData.phone,
+        giftMessage: editData.giftMessage,
+      })
       if (result.success && onOrderUpdated) {
         onOrderUpdated(result.data)
         setIsEditing(false)
@@ -119,9 +125,9 @@ function OrderActions({ order, onOrderUpdated }) {
         <div className="edit-form">
           <div className="edit-form-grid">
             <div className="edit-field">
-              <label htmlFor={`edit-name-${order.id}`}>Name</label>
+              <label htmlFor={`edit-name-${orderId}`}>Name</label>
               <input
-                id={`edit-name-${order.id}`}
+                id={`edit-name-${orderId}`}
                 type="text"
                 value={editData.customerName}
                 onChange={(e) => setEditData({ ...editData, customerName: e.target.value })}
@@ -129,9 +135,9 @@ function OrderActions({ order, onOrderUpdated }) {
               />
             </div>
             <div className="edit-field">
-              <label htmlFor={`edit-email-${order.id}`}>Email</label>
+              <label htmlFor={`edit-email-${orderId}`}>Email</label>
               <input
-                id={`edit-email-${order.id}`}
+                id={`edit-email-${orderId}`}
                 type="email"
                 value={editData.email}
                 onChange={(e) => setEditData({ ...editData, email: e.target.value })}
@@ -139,9 +145,9 @@ function OrderActions({ order, onOrderUpdated }) {
               />
             </div>
             <div className="edit-field">
-              <label htmlFor={`edit-phone-${order.id}`}>Phone</label>
+              <label htmlFor={`edit-phone-${orderId}`}>Phone</label>
               <input
-                id={`edit-phone-${order.id}`}
+                id={`edit-phone-${orderId}`}
                 type="tel"
                 value={editData.phone}
                 onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
@@ -149,9 +155,9 @@ function OrderActions({ order, onOrderUpdated }) {
               />
             </div>
             <div className="edit-field">
-              <label htmlFor={`edit-gift-${order.id}`}>Gift Message</label>
+              <label htmlFor={`edit-gift-${orderId}`}>Gift Message</label>
               <input
-                id={`edit-gift-${order.id}`}
+                id={`edit-gift-${orderId}`}
                 type="text"
                 value={editData.giftMessage}
                 onChange={(e) => setEditData({ ...editData, giftMessage: e.target.value })}

@@ -17,7 +17,7 @@ class AuthService {
    * @returns {Promise<Object>} sanitised user (no password hash)
    * @throws {Error} 409 if email or username already exists
    */
-  async register({ fullName, username, email, password, address }) {
+  async register({ fullName, username, email, password, phone, address }) {
     // Check email uniqueness
     const existingEmail = await authRepository.findByEmail(email)
     if (existingEmail) {
@@ -43,6 +43,7 @@ class AuthService {
       username,
       email,
       passwordHash,
+      phone: phone || null,
       address,
       roleCode: 'customer',
     })
@@ -114,6 +115,15 @@ class AuthService {
 
     const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS)
     await authRepository.updatePassword(userId, passwordHash)
+  }
+
+  /**
+   * Get all active customers (for manager order creation)
+   * @param {string} [search] - Optional name/email search
+   * @returns {Promise<Array>}
+   */
+  async getCustomers(search = '') {
+    return authRepository.getCustomers(search)
   }
 
   // ── Private Helpers ────────────────────────────────────

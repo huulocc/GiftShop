@@ -1,63 +1,155 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect, useCallback } from 'react'
 import OrderBuilder from '../../builders/OrderBuilder'
 import orderService from '../../services/orderService'
-import ProductData from '../products/Products/Products.json'
+import productService from '../../services/productService'
+import { useAuth } from '../../services/AuthContext'
 import './OrderForm.scss'
 
 /**
  * OrderForm - Single-page form for creating a new order
  *
- * Uses the Builder pattern (OrderBuilder) to construct the order
- * payload step by step before submitting to the API.
+ * Role-aware behaviour:
+ *  - customer  → customer info auto-filled from session, read-only
+ *  - manager   → searchable customer picker to select whose order this is
+ *
+ * Products are fetched from the database via /api/products (not a static JSON).
+ * Uses the Builder pattern (OrderBuilder) to construct the payload.
  */
 function OrderForm({ onOrderCreated }) {
-  // Customer info
+  const { user } = useAuth()
+  const isManager = user?.roleCode === 'manager'
+
+  // ── Customer info ───────────────────────────────────────
+  const [customerId, setCustomerId] = useState('')
   const [customerName, setCustomerName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
 
-  // Shipping address
+  // Manager customer picker state
+  const [customerSearch, setCustomerSearch] = useState('')
+  const [customerList, setCustomerList] = useState([])
+  const [customerLoading, setCustomerLoading] = useState(false)
+  const [customerDropdownOpen, setCustomerDropdownOpen] = useState(false)
+  const [selectedCustomer, setSelectedCustomer] = useState(null)
+
+  // ── Shipping address ─────────────────────────────────────
   const [street, setStreet] = useState('')
   const [city, setCity] = useState('')
   const [state, setState] = useState('')
   const [zipCode, setZipCode] = useState('')
 
-  // Items
+  // ── Products from DB ─────────────────────────────────────
+  const [dbProducts, setDbProducts] = useState([])
+  const [productsLoading, setProductsLoading] = useState(true)
+  const [productSearch, setProductSearch] = useState('')
+
+  // ── Items ────────────────────────────────────────────────
   const [selectedItems, setSelectedItems] = useState([])
 
-  // Options
+  // ── Options ──────────────────────────────────────────────
   const [giftMessage, setGiftMessage] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('credit_card')
 
-  // UI state
+  // ── UI state ─────────────────────────────────────────────
   const [errors, setErrors] = useState([])
   const [loading, setLoading] = useState(false)
+  const [successMsg, setSuccessMsg] = useState('')
 
-  /**
-   * Use Builder to construct a preview of the order
-   */
-  const orderPreview = useMemo(() => {
-    const builder = new OrderBuilder()
-    return builder
-      .setCustomerName(customerName)
-      .setEmail(email)
-      .setPhone(phone)
-      .setShippingAddress({ street, city, state, zipCode })
-      .setItems(selectedItems)
-      .setGiftMessage(giftMessage)
-      .setPaymentMethod(paymentMethod)
-      .getPreview()
-  }, [customerName, email, phone, street, city, state, zipCode, selectedItems, giftMessage, paymentMethod])
+  // ── Auto-fill for customers ───────────────────────────────
+  useEffect(() => {
+    if (!isManager && user) {
+      setCustomerId(user.userId || '')
+      setCustomerName(user.fullName || '')
+      setEmail(user.email || '')
+      setPhone(user.phone || '')
+    }
+  }, [isManager, user])
 
-  /**
-   * Add a product to the order items
-   */
+  // ── Fetch products from DB ─────────────────────────────────
+  useEffect(() => {
+    let cancelled = false
+    const loadProducts = async () => {
+      setProductsLoading(true)
+      try {
+        const result = await productService.getAll({ limit: 200 })
+        if (!cancelled && result.success) {
+          setDbProducts(result.data)
+        }
+      } catch {
+        if (!cancelled) setDbProducts([])
+      } finally {
+        if (!cancelled) setProductsLoading(false)
+      }
+    }
+    loadProducts()
+    return () => { cancelled = true }
+  }, [])
+
+  // ── Filter products by search term ────────────────────────
+  const filteredProducts = useMemo(() => {
+    if (!productSearch.trim()) return dbProducts
+    const q = productSearch.toLowerCase()
+    return dbProducts.filter(
+      (p) =>
+        p.productName.toLowerCase().includes(q) ||
+        (p.categoryName && p.categoryName.toLowerCase().includes(q))
+    )
+  }, [dbProducts, productSearch])
+
+  // ── Fetch customers for manager picker ────────────────────
+  const fetchCustomers = useCallback(async (search) => {
+    setCustomerLoading(true)
+    try {
+      const result = await orderService.getCustomers(search)
+      if (result.success) setCustomerList(result.data)
+    } catch {
+      setCustomerList([])
+    } finally {
+      setCustomerLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!isManager) return
+    const timer = setTimeout(() => {
+      fetchCustomers(customerSearch)
+    }, 280)
+    return () => clearTimeout(timer)
+  }, [isManager, customerSearch, fetchCustomers])
+
+  // Load full customer list on mount for managers
+  useEffect(() => {
+    if (isManager) fetchCustomers('')
+  }, [isManager, fetchCustomers])
+
+  const handleSelectCustomer = (c) => {
+    setSelectedCustomer(c)
+    setCustomerId(c.userId)
+    setCustomerName(c.fullName)
+    setEmail(c.email)
+    setPhone(c.phone || '')
+    setCustomerSearch(c.fullName)
+    setCustomerDropdownOpen(false)
+  }
+
+  const handleClearCustomer = () => {
+    setSelectedCustomer(null)
+    setCustomerId('')
+    setCustomerName('')
+    setEmail('')
+    setPhone('')
+    setCustomerSearch('')
+  }
+
+  // ── Product helpers (uses DB product shape) ────────────────
   const handleAddProduct = (product) => {
-    const exists = selectedItems.find((item) => item.productId === product.id)
+    if (product.stockQuantity <= 0) return
+    const exists = selectedItems.find((item) => item.productId === product.productId)
     if (exists) {
+      if (exists.quantity >= product.stockQuantity) return
       setSelectedItems(
         selectedItems.map((item) =>
-          item.productId === product.id
+          item.productId === product.productId
             ? { ...item, quantity: item.quantity + 1 }
             : item
         )
@@ -66,25 +158,20 @@ function OrderForm({ onOrderCreated }) {
       setSelectedItems([
         ...selectedItems,
         {
-          productId: product.id,
-          productName: product.name,
+          productId: product.productId,
+          productName: product.productName,
           quantity: 1,
           price: parseFloat(product.price),
+          maxStock: product.stockQuantity,
         },
       ])
     }
   }
 
-  /**
-   * Remove a product from the order items
-   */
   const handleRemoveProduct = (productId) => {
     setSelectedItems(selectedItems.filter((item) => item.productId !== productId))
   }
 
-  /**
-   * Update item quantity
-   */
   const handleQuantityChange = (productId, quantity) => {
     const qty = parseInt(quantity, 10)
     if (qty <= 0) {
@@ -92,21 +179,22 @@ function OrderForm({ onOrderCreated }) {
       return
     }
     setSelectedItems(
-      selectedItems.map((item) =>
-        item.productId === productId ? { ...item, quantity: qty } : item
-      )
+      selectedItems.map((item) => {
+        if (item.productId !== productId) return item
+        const clamped = Math.min(qty, item.maxStock || 9999)
+        return { ...item, quantity: clamped }
+      })
     )
   }
 
-  /**
-   * Client-side validation
-   */
+  // ── Validation ────────────────────────────────────────────
   const validate = () => {
     const errs = []
+    if (!customerId) errs.push('Please select a customer')
     if (!customerName.trim()) errs.push('Customer name is required')
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       errs.push('Valid email is required')
-    if (!phone.trim()) errs.push('Phone is required')
+    // Phone is optional
     if (!street.trim()) errs.push('Street is required')
     if (!city.trim()) errs.push('City is required')
     if (!state.trim()) errs.push('State is required')
@@ -115,17 +203,29 @@ function OrderForm({ onOrderCreated }) {
     return errs
   }
 
-  /**
-   * Handle form submission
-   * Uses Builder pattern to construct the final order payload
-   */
+  // ── Live order preview ────────────────────────────────────
+  const orderPreview = useMemo(() => {
+    const builder = new OrderBuilder()
+    return builder
+      .setCustomerId(customerId)
+      .setCustomerName(customerName)
+      .setEmail(email)
+      .setPhone(phone)
+      .setShippingAddress({ street, city, state, zipCode })
+      .setItems(selectedItems)
+      .setGiftMessage(giftMessage)
+      .setPaymentMethod(paymentMethod)
+      .getPreview()
+  }, [customerId, customerName, email, phone, street, city, state, zipCode, selectedItems, giftMessage, paymentMethod])
+
+  // ── Form submission ───────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setSuccessMsg('')
 
     const validationErrors = validate()
     if (validationErrors.length > 0) {
       setErrors(validationErrors)
-      // Scroll to top to show errors
       window.scrollTo({ top: 0, behavior: 'smooth' })
       return
     }
@@ -134,9 +234,9 @@ function OrderForm({ onOrderCreated }) {
     setLoading(true)
 
     try {
-      // Build the order using Builder pattern
       const builder = new OrderBuilder()
       const orderPayload = builder
+        .setCustomerId(customerId)
         .setCustomerName(customerName)
         .setEmail(email)
         .setPhone(phone)
@@ -150,9 +250,7 @@ function OrderForm({ onOrderCreated }) {
 
       if (result.success) {
         // Reset form
-        setCustomerName('')
-        setEmail('')
-        setPhone('')
+        if (isManager) handleClearCustomer()
         setStreet('')
         setCity('')
         setState('')
@@ -160,10 +258,12 @@ function OrderForm({ onOrderCreated }) {
         setSelectedItems([])
         setGiftMessage('')
         setPaymentMethod('credit_card')
+        setProductSearch('')
 
-        if (onOrderCreated) {
-          onOrderCreated(result.data)
-        }
+        setSuccessMsg(`Order ${result.data?.orderNumber || ''} created successfully!`)
+        setTimeout(() => setSuccessMsg(''), 5000)
+
+        if (onOrderCreated) onOrderCreated(result.data)
       }
     } catch (error) {
       const errorData = error.response?.data
@@ -178,7 +278,7 @@ function OrderForm({ onOrderCreated }) {
     }
   }
 
-  // Payment method options
+  // ── Payment options ───────────────────────────────────────
   const paymentOptions = [
     {
       value: 'credit_card',
@@ -190,12 +290,11 @@ function OrderForm({ onOrderCreated }) {
       ),
     },
     {
-      value: 'debit_card',
-      label: 'Debit Card',
+      value: 'cash',
+      label: 'Cash',
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
-          <line x1="6" y1="15" x2="10" y2="15"/>
+          <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
         </svg>
       ),
     },
@@ -210,17 +309,18 @@ function OrderForm({ onOrderCreated }) {
       ),
     },
     {
-      value: 'cod',
-      label: 'Cash on Delivery',
+      value: 'bank_transfer',
+      label: 'Bank Transfer',
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+          <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+          <line x1="6" y1="15" x2="10" y2="15"/>
         </svg>
       ),
     },
   ]
 
-  // Visual step tracker
+  // ── Visual step tracker ───────────────────────────────────
   const steps = [
     { label: 'Customer', icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -244,12 +344,11 @@ function OrderForm({ onOrderCreated }) {
     )},
   ]
 
-  // Determine which steps are "filled" for visual progress
   const stepDone = [
-    !!(customerName && email && phone),
+    !!(customerId && customerName && email),
     !!(street && city && state && zipCode),
     selectedItems.length > 0,
-    true, // payment always has a default
+    true,
   ]
 
   return (
@@ -257,13 +356,21 @@ function OrderForm({ onOrderCreated }) {
       {/* Main Form Area */}
       <div className="order-form-container">
 
+        {/* Success Toast */}
+        {successMsg && (
+          <div className="order-success-toast" role="status">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span>{successMsg}</span>
+            <button type="button" className="toast-close" onClick={() => setSuccessMsg('')}>×</button>
+          </div>
+        )}
+
         {/* Visual Step Indicator */}
         <div className="order-stepper" aria-label="Form progress">
           {steps.map((step, i) => (
-            <div
-              key={i}
-              className={`stepper-step ${stepDone[i] ? 'done' : ''}`}
-            >
+            <div key={i} className={`stepper-step ${stepDone[i] ? 'done' : ''}`}>
               <div className="stepper-circle">
                 {stepDone[i] ? (
                   <svg className="stepper-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -308,44 +415,124 @@ function OrderForm({ onOrderCreated }) {
               </div>
               <div>
                 <h3 className="form-section-title">Customer Information</h3>
-                <p className="form-section-subtitle">Who is placing this order?</p>
+                <p className="form-section-subtitle">
+                  {isManager ? 'Search and select a customer for this order' : 'Your account information'}
+                </p>
               </div>
             </div>
-            <div className="form-grid">
-              <div className="form-field">
-                <input
-                  id="customerName"
-                  type="text"
-                  className="form-input"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  placeholder=" "
-                />
-                <label className="form-label" htmlFor="customerName">Full Name *</label>
+
+            {/* Manager: Customer Search Picker */}
+            {isManager ? (
+              <div className="customer-picker">
+                {selectedCustomer ? (
+                  <div className="selected-customer-card">
+                    <div className="selected-customer-avatar">
+                      {customerName.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="selected-customer-info">
+                      <span className="selected-customer-name">{customerName}</span>
+                      <span className="selected-customer-email">{email}</span>
+                      {phone && <span className="selected-customer-phone">{phone}</span>}
+                    </div>
+                    <button type="button" className="btn-clear-customer" onClick={handleClearCustomer} title="Change customer">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                      </svg>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="customer-search-wrapper">
+                    <div className="customer-search-field">
+                      <svg className="customer-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                      </svg>
+                      <input
+                        id="customerSearch"
+                        type="text"
+                        className="customer-search-input"
+                        placeholder="Search by name or email…"
+                        value={customerSearch}
+                        onChange={(e) => {
+                          setCustomerSearch(e.target.value)
+                          setCustomerDropdownOpen(true)
+                        }}
+                        onFocus={() => setCustomerDropdownOpen(true)}
+                        autoComplete="off"
+                      />
+                      {customerLoading && (
+                        <svg className="customer-search-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <circle cx="12" cy="12" r="10" strokeOpacity="0.2"/>
+                          <path d="M12 2a10 10 0 0110 10" strokeLinecap="round"/>
+                        </svg>
+                      )}
+                    </div>
+                    {customerDropdownOpen && customerList.length > 0 && (
+                      <ul className="customer-dropdown" role="listbox">
+                        {customerList
+                          .filter((c) =>
+                            !customerSearch ||
+                            c.fullName.toLowerCase().includes(customerSearch.toLowerCase()) ||
+                            c.email.toLowerCase().includes(customerSearch.toLowerCase())
+                          )
+                          .map((c) => (
+                            <li
+                              key={c.userId}
+                              className="customer-dropdown-item"
+                              role="option"
+                              onClick={() => handleSelectCustomer(c)}
+                              onKeyDown={(e) => e.key === 'Enter' && handleSelectCustomer(c)}
+                              tabIndex={0}
+                            >
+                              <div className="customer-dropdown-avatar">{c.fullName.charAt(0).toUpperCase()}</div>
+                              <div className="customer-dropdown-details">
+                                <span className="customer-dropdown-name">{c.fullName}</span>
+                                <span className="customer-dropdown-email">{c.email}</span>
+                              </div>
+                            </li>
+                          ))}
+                      </ul>
+                    )}
+                    {customerDropdownOpen && !customerLoading && customerList.filter((c) =>
+                      !customerSearch ||
+                      c.fullName.toLowerCase().includes(customerSearch.toLowerCase()) ||
+                      c.email.toLowerCase().includes(customerSearch.toLowerCase())
+                    ).length === 0 && (
+                      <div className="customer-dropdown customer-dropdown--empty">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        No customers found
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
-              <div className="form-field">
-                <input
-                  id="email"
-                  type="email"
-                  className="form-input"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder=" "
-                />
-                <label className="form-label" htmlFor="email">Email Address *</label>
+            ) : (
+              /* Customer: auto-filled read-only fields */
+              <div className="form-grid">
+                <div className="form-field">
+                  <input id="customerName" type="text" className="form-input form-input--readonly" value={customerName} readOnly placeholder=" " />
+                  <label className="form-label" htmlFor="customerName">Full Name</label>
+                  <span className="form-field-badge">Auto-filled</span>
+                </div>
+                <div className="form-field">
+                  <input id="email" type="email" className="form-input form-input--readonly" value={email} readOnly placeholder=" " />
+                  <label className="form-label" htmlFor="email">Email Address</label>
+                  <span className="form-field-badge">Auto-filled</span>
+                </div>
+                <div className="form-field">
+                  <input
+                    id="phone"
+                    type="tel"
+                    className="form-input"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder=" "
+                  />
+                  <label className="form-label" htmlFor="phone">Phone Number</label>
+                </div>
               </div>
-              <div className="form-field">
-                <input
-                  id="phone"
-                  type="tel"
-                  className="form-input"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder=" "
-                />
-                <label className="form-label" htmlFor="phone">Phone Number *</label>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* ── Section 2: Shipping Address ── */}
@@ -363,53 +550,25 @@ function OrderForm({ onOrderCreated }) {
             </div>
             <div className="form-grid">
               <div className="form-field form-field--full">
-                <input
-                  id="street"
-                  type="text"
-                  className="form-input"
-                  value={street}
-                  onChange={(e) => setStreet(e.target.value)}
-                  placeholder=" "
-                />
+                <input id="street" type="text" className="form-input" value={street} onChange={(e) => setStreet(e.target.value)} placeholder=" " />
                 <label className="form-label" htmlFor="street">Street Address *</label>
               </div>
               <div className="form-field">
-                <input
-                  id="city"
-                  type="text"
-                  className="form-input"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  placeholder=" "
-                />
+                <input id="city" type="text" className="form-input" value={city} onChange={(e) => setCity(e.target.value)} placeholder=" " />
                 <label className="form-label" htmlFor="city">City *</label>
               </div>
               <div className="form-field">
-                <input
-                  id="state"
-                  type="text"
-                  className="form-input"
-                  value={state}
-                  onChange={(e) => setState(e.target.value)}
-                  placeholder=" "
-                />
+                <input id="state" type="text" className="form-input" value={state} onChange={(e) => setState(e.target.value)} placeholder=" " />
                 <label className="form-label" htmlFor="state">State / Province *</label>
               </div>
               <div className="form-field">
-                <input
-                  id="zipCode"
-                  type="text"
-                  className="form-input"
-                  value={zipCode}
-                  onChange={(e) => setZipCode(e.target.value)}
-                  placeholder=" "
-                />
+                <input id="zipCode" type="text" className="form-input" value={zipCode} onChange={(e) => setZipCode(e.target.value)} placeholder=" " />
                 <label className="form-label" htmlFor="zipCode">Zip Code *</label>
               </div>
             </div>
           </div>
 
-          {/* ── Section 3: Product Selection ── */}
+          {/* ── Section 3: Product Selection (from DB) ── */}
           <div className="form-section">
             <div className="form-section-header">
               <div className="form-section-icon">
@@ -421,42 +580,95 @@ function OrderForm({ onOrderCreated }) {
                 <h3 className="form-section-title">Select Products</h3>
                 <p className="form-section-subtitle">
                   {selectedItems.length > 0
-                    ? `${selectedItems.length} item(s) selected`
-                    : 'Click a product to add it to your order'}
+                    ? `${selectedItems.length} item(s) selected · $${orderPreview.totalAmount.toFixed(2)} total`
+                    : productsLoading ? 'Loading products from catalog...' : `${dbProducts.length} products available`}
                 </p>
               </div>
             </div>
 
-            {/* Product Grid */}
-            <div className="product-selector">
-              {ProductData.map((product) => {
-                const selectedItem = selectedItems.find((item) => item.productId === product.id)
-                const isSelected = !!selectedItem
-                return (
-                  <div
-                    key={product.id}
-                    className={`product-option ${isSelected ? 'selected' : ''}`}
-                    onClick={() => !isSelected && handleAddProduct(product)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => e.key === 'Enter' && !isSelected && handleAddProduct(product)}
-                  >
-                    {isSelected && (
-                      <div className="product-option-check">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                      </div>
-                    )}
-                    <div className="product-option-category-tag">
-                      {product.categories.name}
-                    </div>
-                    <span className="product-option-name">{product.name}</span>
-                    <span className="product-option-price">${parseFloat(product.price).toFixed(2)}</span>
-                  </div>
-                )
-              })}
+            {/* Product Search Bar */}
+            <div className="product-search-bar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <input
+                type="text"
+                placeholder="Search products by name or category…"
+                value={productSearch}
+                onChange={(e) => setProductSearch(e.target.value)}
+                className="product-search-input"
+                id="productSearch"
+              />
+              {productSearch && (
+                <button type="button" className="product-search-clear" onClick={() => setProductSearch('')}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              )}
             </div>
+
+            {/* Product Grid */}
+            {productsLoading ? (
+              <div className="product-selector">
+                {[1,2,3,4,5,6].map((k) => (
+                  <div key={k} className="product-option product-skeleton">
+                    <div className="skeleton-category" />
+                    <div className="skeleton-name" />
+                    <div className="skeleton-price" />
+                  </div>
+                ))}
+              </div>
+            ) : filteredProducts.length === 0 ? (
+              <div className="product-empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>
+                </svg>
+                <span>No products found{productSearch ? ` for "${productSearch}"` : ''}</span>
+              </div>
+            ) : (
+              <div className="product-selector">
+                {filteredProducts.map((product) => {
+                  const selectedItem = selectedItems.find((item) => item.productId === product.productId)
+                  const isSelected = !!selectedItem
+                  const outOfStock = product.stockQuantity <= 0
+                  return (
+                    <div
+                      key={product.productId}
+                      className={`product-option ${isSelected ? 'selected' : ''} ${outOfStock ? 'out-of-stock' : ''}`}
+                      onClick={() => !isSelected && !outOfStock && handleAddProduct(product)}
+                      role="button"
+                      tabIndex={outOfStock ? -1 : 0}
+                      onKeyDown={(e) => e.key === 'Enter' && !isSelected && !outOfStock && handleAddProduct(product)}
+                      aria-disabled={outOfStock}
+                    >
+                      {isSelected && (
+                        <div className="product-option-check">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="20 6 9 17 4 12"/>
+                          </svg>
+                        </div>
+                      )}
+                      {outOfStock && (
+                        <div className="product-option-badge-oos">Out of Stock</div>
+                      )}
+                      <div className="product-option-category-tag">
+                        {product.categoryName || 'General'}
+                      </div>
+                      <span className="product-option-name">{product.productName}</span>
+                      <div className="product-option-footer">
+                        <span className="product-option-price">${parseFloat(product.price).toFixed(2)}</span>
+                        {!outOfStock && (
+                          <span className={`product-option-stock ${product.stockQuantity <= 5 ? 'low' : ''}`}>
+                            {product.stockQuantity <= 5 ? `Only ${product.stockQuantity} left` : `${product.stockQuantity} in stock`}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
 
             {/* Selected Items Table */}
             {selectedItems.length > 0 && (
@@ -465,7 +677,7 @@ function OrderForm({ onOrderCreated }) {
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
                   </svg>
-                  <h4>Cart Summary</h4>
+                  <h4>Cart Summary · {selectedItems.length} item{selectedItems.length > 1 ? 's' : ''}</h4>
                 </div>
                 <table className="items-table">
                   <thead>
@@ -483,36 +695,22 @@ function OrderForm({ onOrderCreated }) {
                         <td className="td-product">{item.productName}</td>
                         <td className="td-center">
                           <div className="qty-control">
-                            <button
-                              type="button"
-                              className="qty-btn"
-                              onClick={() => handleQuantityChange(item.productId, item.quantity - 1)}
-                            >−</button>
+                            <button type="button" className="qty-btn" onClick={() => handleQuantityChange(item.productId, item.quantity - 1)}>−</button>
                             <input
                               type="number"
                               min="1"
+                              max={item.maxStock || 9999}
                               value={item.quantity}
                               onChange={(e) => handleQuantityChange(item.productId, e.target.value)}
                               className="qty-input"
                             />
-                            <button
-                              type="button"
-                              className="qty-btn"
-                              onClick={() => handleQuantityChange(item.productId, item.quantity + 1)}
-                            >+</button>
+                            <button type="button" className="qty-btn" onClick={() => handleQuantityChange(item.productId, item.quantity + 1)}>+</button>
                           </div>
                         </td>
                         <td className="td-right td-muted">${item.price.toFixed(2)}</td>
-                        <td className="td-right td-subtotal">
-                          ${(item.price * item.quantity).toFixed(2)}
-                        </td>
+                        <td className="td-right td-subtotal">${(item.price * item.quantity).toFixed(2)}</td>
                         <td>
-                          <button
-                            type="button"
-                            className="btn-remove"
-                            onClick={() => handleRemoveProduct(item.productId)}
-                            title="Remove item"
-                          >
+                          <button type="button" className="btn-remove" onClick={() => handleRemoveProduct(item.productId)} title="Remove item">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                               <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
                             </svg>
@@ -542,28 +740,15 @@ function OrderForm({ onOrderCreated }) {
                 </svg>
               </div>
               <div>
-                <h3 className="form-section-title">Payment & Options</h3>
+                <h3 className="form-section-title">Payment &amp; Options</h3>
                 <p className="form-section-subtitle">Choose how you'd like to pay</p>
               </div>
             </div>
 
-            {/* Payment Radio Cards */}
             <div className="payment-grid">
               {paymentOptions.map((opt) => (
-                <label
-                  key={opt.value}
-                  className={`payment-card ${paymentMethod === opt.value ? 'selected' : ''}`}
-                  htmlFor={`pay-${opt.value}`}
-                >
-                  <input
-                    type="radio"
-                    id={`pay-${opt.value}`}
-                    name="paymentMethod"
-                    value={opt.value}
-                    checked={paymentMethod === opt.value}
-                    onChange={() => setPaymentMethod(opt.value)}
-                    className="payment-radio"
-                  />
+                <label key={opt.value} className={`payment-card ${paymentMethod === opt.value ? 'selected' : ''}`} htmlFor={`pay-${opt.value}`}>
+                  <input type="radio" id={`pay-${opt.value}`} name="paymentMethod" value={opt.value} checked={paymentMethod === opt.value} onChange={() => setPaymentMethod(opt.value)} className="payment-radio" />
                   <span className="payment-card-icon">{opt.icon}</span>
                   <span className="payment-card-label">{opt.label}</span>
                   <span className="payment-card-check">
@@ -575,7 +760,6 @@ function OrderForm({ onOrderCreated }) {
               ))}
             </div>
 
-            {/* Gift Message */}
             <div className="form-field form-field--gift">
               <div className="gift-label-row">
                 <label htmlFor="giftMessage" className="gift-label">

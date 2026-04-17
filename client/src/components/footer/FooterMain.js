@@ -1,8 +1,25 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import './FooterMain.scss'
 import { Link } from 'react-router-dom'
+import categoryService from '../../services/categoryService'
 
 function FooterMain() {
+  const [footerCategories, setFooterCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const result = await categoryService.getAll()
+        if (result.success) {
+          setFooterCategories(result.data.slice(0, 4)); // Keep footer tidy with top 4
+        }
+      } catch (error) {
+        console.error('Failed to fetch categories:', error)
+      }
+    }
+    fetchCategories()
+  }, [])
+
   const footercontent = {
     About: [
       { id: '1', info: 'Home', path: '/' },
@@ -10,17 +27,7 @@ function FooterMain() {
       { id: '3', info: 'Comparison', path: '/compare' },
       { id: '4', info: 'Contact', path: '/contact' },
     ],
-    Brands: [
-      { id: '1', info: 'Zazzle Gifts', path: '/products?brand=1' },
-      { id: '2', info: 'Giftr Gifts', path: '/products?brand=2' },
-      { id: '3', info: 'Etsy Gifts', path: '/products?brand=3' },
-    ],
-    Categories: [
-      { id: '1', info: 'Mugs', path: '/products?category=1' },
-      { id: '2', info: 'Bracelets', path: '/products?category=2' },
-      { id: '3', info: 'Cards', path: '/products?category=3' },
-      { id: '4', info: 'Balloons', path: '/products?category=4' }
-    ],
+    // Categories are fetched dynamically now
     Social: [
       // { id: '1', info: 'Facebook', path: 'https://www.facebook.com/', icon: 'facebook' },
       // { id: '2', info: 'Twitter', path: 'https://twitter.com/', icon: 'twitter' },
@@ -59,18 +66,10 @@ function FooterMain() {
             </ul>
           </div>
           <div className="footer-col">
-            <h4 className="footer-col-title">Brands</h4>
-            <ul className="footer-col-list">
-              {footercontent.Brands.map((item) => (
-                <li key={item.id}><Link to={item.path} className="footer-col-link">{item.info}</Link></li>
-              ))}
-            </ul>
-          </div>
-          <div className="footer-col">
             <h4 className="footer-col-title">Categories</h4>
             <ul className="footer-col-list">
-              {footercontent.Categories.map((item) => (
-                <li key={item.id}><Link to={item.path} className="footer-col-link">{item.info}</Link></li>
+              {footerCategories.map((item) => (
+                <li key={item.categoryId}><Link to={`/search?q=${item.categoryId}`} className="footer-col-link">{item.categoryName}</Link></li>
               ))}
             </ul>
           </div>

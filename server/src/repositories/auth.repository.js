@@ -66,7 +66,7 @@ class AuthRepository {
    * @param {{ fullName: string, username: string, email: string, passwordHash: string, address: string, roleCode: string }} data
    * @returns {Promise<Object>} the created user
    */
-  async createUser({ fullName, username, email, passwordHash, address, roleCode = 'customer' }) {
+  async createUser({ fullName, username, email, passwordHash, phone, address, roleCode = 'customer' }) {
     // Resolve role_id from role_code
     const roleResult = await pool.query(
       `SELECT role_id FROM roles WHERE role_code = $1`,
@@ -80,10 +80,10 @@ class AuthRepository {
     const roleId = roleResult.rows[0].role_id
 
     const result = await pool.query(
-      `INSERT INTO users (role_id, full_name, username, email, password_hash, address)
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO users (role_id, full_name, username, email, password_hash, phone, address)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
-      [roleId, fullName, username, email, passwordHash, address || null]
+      [roleId, fullName, username, email, passwordHash, phone || null, address || null]
     )
 
     // Re-fetch with role info
@@ -98,6 +98,35 @@ class AuthRepository {
       `UPDATE users SET password_hash = $1 WHERE user_id = $2`,
       [passwordHash, userId]
     )
+  }
+
+  /**
+   * Get all customers (users with role_code = 'customer')
+   * Used by managers when creating orders on behalf of customers.
+   * @param {string} [search] - Optional search string for name/email
+   * @returns {Promise<Array>} list of customer objects
+   */
+  async getCustomers(search = '') {
+    let query = `
+      SELECT u.user_id, u.full_name, u.email, u.phone, u.address
+      FROM users u
+      JOIN roles r ON u.role_id = r.role_id
+      WHERE r.role_code = 'customer' AND u.is_active = TRUE
+    `
+    const params = []
+    if (search && search.trim().length > 0) {
+      params.push(`%${search.trim()}%`)
+      query += ` AND (LOWER(u.full_name) LIKE LOWER($1) OR LOWER(u.email) LIKE LOWER($1))`
+    }
+    query += ` ORDER BY u.full_name ASC LIMIT 50`
+    const result = await pool.query(query, params)
+    return result.rows.map((row) => ({
+      userId: row.user_id,
+      fullName: row.full_name,
+      email: row.email,
+      phone: row.phone || '',
+      address: row.address || '',
+    }))
   }
 
   // ── Private Helpers ────────────────────────────────────

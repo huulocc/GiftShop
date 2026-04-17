@@ -32,9 +32,9 @@ function validateCreateOrder(req, res, next) {
     }
   }
 
-  // Phone
-  if (!phone || typeof phone !== 'string' || phone.trim().length === 0) {
-    errors.push('phone is required')
+  // Phone (optional — customer_phone_snapshot is nullable in DB)
+  if (phone !== undefined && phone !== null && typeof phone !== 'string') {
+    errors.push('phone must be a string if provided')
   }
 
   // Shipping address (can be string or object)

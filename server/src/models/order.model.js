@@ -113,6 +113,7 @@ class Order {
 class OrderBuilder {
   constructor() {
     this._customerId = null
+    this._staffId = null
     this._customerName = ''
     this._email = ''
     this._phone = ''
@@ -126,6 +127,11 @@ class OrderBuilder {
 
   setCustomerId(id) {
     this._customerId = id
+    return this
+  }
+
+  setStaffId(id) {
+    this._staffId = id || null
     return this
   }
 
@@ -195,6 +201,7 @@ class OrderBuilder {
 
     return new Order({
       customerId: this._customerId,
+      staffId: this._staffId,
       customerNameSnapshot: this._customerName,
       customerEmailSnapshot: this._email,
       customerPhoneSnapshot: this._phone,

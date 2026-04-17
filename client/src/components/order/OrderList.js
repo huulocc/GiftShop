@@ -48,8 +48,9 @@ function OrderList() {
    * Handle order update (from OrderActions)
    */
   const handleOrderUpdated = (updatedOrder) => {
+    const updatedId = updatedOrder.orderId || updatedOrder.id
     setOrders((prev) =>
-      prev.map((o) => (o.id === updatedOrder.id ? updatedOrder : o))
+      prev.map((o) => ((o.orderId || o.id) === updatedId ? updatedOrder : o))
     )
   }
 
@@ -200,7 +201,7 @@ function OrderList() {
         <div className="order-list">
           {orders.map((order, i) => (
             <OrderCard
-              key={order.id}
+              key={order.orderId || order.id}
               order={order}
               onOrderUpdated={handleOrderUpdated}
               style={{ animationDelay: `${i * 60}ms` }}

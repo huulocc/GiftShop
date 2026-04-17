@@ -14,12 +14,44 @@ class SearchController {
       const { q } = req.query
 
       if (!q || q.trim().length === 0) {
+        // No query → return all active products for browsing
+        const allProductsRes = await pool.query(
+          `SELECT p.*, c.category_name,
+                  u1.full_name AS created_by_name, u2.full_name AS updated_by_name
+           FROM products p
+           LEFT JOIN categories c ON p.category_id = c.category_id
+           LEFT JOIN users u1 ON p.created_by = u1.user_id
+           LEFT JOIN users u2 ON p.updated_by = u2.user_id
+           WHERE p.is_active = TRUE
+           ORDER BY p.product_name ASC
+           LIMIT 200`
+        )
+
+        const mappedAll = allProductsRes.rows.map((row) => {
+          const data = {
+            productId: row.product_id,
+            categoryId: row.category_id,
+            categoryName: row.category_name || null,
+            productName: row.product_name,
+            productType: row.product_type,
+            description: row.description,
+            price: parseFloat(row.price),
+            stockQuantity: row.stock_quantity,
+            imageUrl: row.image_url,
+            isActive: row.is_active,
+            createdBy: row.created_by,
+            createdByName: row.created_by_name || null,
+            updatedBy: row.updated_by,
+            updatedByName: row.updated_by_name || null,
+            createdAt: row.created_at,
+            updatedAt: row.updated_at,
+          }
+          return ProductFactory.create(row.product_type, data).toJSON()
+        })
+
         return res.status(200).json({
           success: true,
-          data: {
-            categories: [],
-            products: [],
-          },
+          data: { categories: [], products: mappedAll, allProducts: true },
         })
       }
 

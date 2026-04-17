@@ -11,6 +11,7 @@ function RegisterPage() {
     fullName: '',
     username: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
     address: '',
@@ -34,6 +35,11 @@ function RegisterPage() {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       if (!emailRegex.test(form.email)) err.push('Please enter a valid email address')
     }
+    if (!form.phone.trim()) err.push('Phone number is required')
+    else {
+      const phoneRegex = /^[+]?[\d\s\-().]{7,20}$/
+      if (!phoneRegex.test(form.phone.trim())) err.push('Please enter a valid phone number')
+    }
     if (!form.password) err.push('Password is required')
     else if (form.password.length < 6) err.push('Password must be at least 6 characters')
     if (form.password !== form.confirmPassword) err.push('Passwords do not match')
@@ -55,6 +61,7 @@ function RegisterPage() {
         fullName: form.fullName.trim(),
         username: form.username.trim(),
         email: form.email.trim().toLowerCase(),
+        phone: form.phone.trim(),
         password: form.password,
         address: form.address.trim() || null,
       })
@@ -147,6 +154,26 @@ function RegisterPage() {
               onChange={handleChange}
               autoComplete="email"
             />
+          </div>
+
+          <div className="auth-form-group">
+            <label htmlFor="register-phone">
+              Phone Number
+            </label>
+            <div className="auth-input-icon-wrap">
+              <svg className="auth-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.63a19.79 19.79 0 01-3.07-8.63A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.18 6.18l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+              </svg>
+              <input
+                id="register-phone"
+                type="tel"
+                name="phone"
+                placeholder="e.g. 0901 234 567"
+                value={form.phone}
+                onChange={handleChange}
+                autoComplete="tel"
+              />
+            </div>
           </div>
 
           <div className="auth-form-row">

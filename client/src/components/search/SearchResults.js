@@ -18,7 +18,11 @@ function SearchResults() {
       setError('')
       try {
         if (!query.trim()) {
-          setResults({ categories: [], products: [] })
+          // No query — fetch all products
+          const response = await searchService.search('')
+          if (response.success) {
+            setResults(response.data)
+          }
           return
         }
         
@@ -50,20 +54,28 @@ function SearchResults() {
   const hasProducts = results.products && results.products.length > 0
   const noMatch = !hasCategories && !hasProducts
 
+  const isAllProducts = !query.trim() || results.allProducts
   const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(query)
   const isCategoryView = isUUID && results.categories?.length === 1
-  
-  const headerTitle = isCategoryView ? `Category: ${results.categories[0].categoryName}` : 'Search Results'
-  const headerSubtitle = isCategoryView 
-    ? (results.categories[0].description || `Showing products in ${results.categories[0].categoryName}`)
-    : `Showing results for: "${query}"`
+
+  const headerTitle = isAllProducts
+    ? 'All Products'
+    : isCategoryView
+      ? `Category: ${results.categories[0].categoryName}`
+      : 'Search Results'
+
+  const headerSubtitle = isAllProducts
+    ? `${results.products?.length || 0} products available`
+    : isCategoryView
+      ? (results.categories[0].description || `Showing products in ${results.categories[0].categoryName}`)
+      : `Showing results for: "${query}"`
 
   return (
     <div className="search-page">
       <div className="search-container">
         <div className="search-header">
           <h1>{headerTitle}</h1>
-          <p>{!isCategoryView && 'Showing results for: '}<strong>{isCategoryView ? headerSubtitle : `"${query}"`}</strong></p>
+          <p>{headerSubtitle}</p>
         </div>
 
         {error && <div className="search-alert search-alert--error">{error}</div>}

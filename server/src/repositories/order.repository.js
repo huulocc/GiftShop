@@ -15,7 +15,7 @@ class OrderRepository {
    * @param {Object} options - { status, page, limit }
    * @returns {Promise<{ orders: Array, total: number }>}
    */
-  async findAll({ status, page = 1, limit = 10 } = {}) {
+  async findAll({ status, customerId, page = 1, limit = 10 } = {}) {
     const conditions = []
     const params = []
     let paramIndex = 1
@@ -23,6 +23,11 @@ class OrderRepository {
     if (status) {
       conditions.push(`o.status = $${paramIndex++}`)
       params.push(status)
+    }
+
+    if (customerId) {
+      conditions.push(`o.customer_id = $${paramIndex++}`)
+      params.push(customerId)
     }
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
@@ -56,6 +61,7 @@ class OrderRepository {
 
     return { orders, total }
   }
+
 
   /**
    * Find a single order by ID (UUID)

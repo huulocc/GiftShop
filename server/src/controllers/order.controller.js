@@ -17,7 +17,21 @@ class OrderController {
    */
   async createOrder(req, res) {
     try {
-      const order = await orderService.createOrder(req.body)
+      const sessionUser = req.session && req.session.user
+      let orderData = { ...req.body }
+
+      if (sessionUser) {
+        if (sessionUser.roleCode === 'customer') {
+          // Customers always create orders for themselves
+          orderData.customerId = sessionUser.userId
+        } else if (sessionUser.roleCode === 'manager') {
+          // Managers must supply a customerId in the body
+          // (already validated by middleware, no override needed)
+          orderData.staffId = sessionUser.userId
+        }
+      }
+
+      const order = await orderService.createOrder(orderData)
       return res.status(201).json({
         success: true,
         data: order,
@@ -38,10 +52,19 @@ class OrderController {
   async getAllOrders(req, res) {
     try {
       const { status, page = 1, limit = 10 } = req.query
+      const sessionUser = req.session && req.session.user
+
+      // Customers can only see their own orders
+      const customerId =
+        sessionUser && sessionUser.roleCode === 'customer'
+          ? sessionUser.userId
+          : req.query.customerId || undefined
+
       const result = await orderService.getAllOrders({
         status,
         page: parseInt(page),
         limit: parseInt(limit),
+        customerId,
       })
 
       return res.status(200).json({

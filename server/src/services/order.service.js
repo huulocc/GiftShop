@@ -17,6 +17,7 @@ class OrderService {
   async createOrder(orderData) {
     const {
       customerId,
+      staffId,
       customerName,
       email,
       phone,
@@ -33,6 +34,7 @@ class OrderService {
 
     const order = builder
       .setCustomerId(customerId)
+      .setStaffId(staffId || null)
       .setCustomerName(customerName)
       .setEmail(email)
       .setPhone(phone)
@@ -113,21 +115,33 @@ class OrderService {
       throw error
     }
 
-    // Map request fields to DB-compatible fields
+    // Map request fields to DB-compatible fields.
+    // Accept both short aliases (from client form) and full snapshot keys
+    // (sent directly by OrderActions after the normalisation fix).
     const mapped = {}
 
-    if (updateData.customerName) mapped.customerNameSnapshot = updateData.customerName
-    if (updateData.email) mapped.customerEmailSnapshot = updateData.email
-    if (updateData.phone) mapped.customerPhoneSnapshot = updateData.phone
-    if (updateData.shippingAddress) {
-      mapped.shippingAddressSnapshot =
-        typeof updateData.shippingAddress === 'string'
-          ? updateData.shippingAddress
-          : JSON.stringify(updateData.shippingAddress)
+    const resolved = {
+      customerName:    updateData.customerNameSnapshot  ?? updateData.customerName,
+      email:           updateData.customerEmailSnapshot ?? updateData.email,
+      phone:           updateData.customerPhoneSnapshot ?? updateData.phone,
+      shippingAddress: updateData.shippingAddressSnapshot ?? updateData.shippingAddress,
+      note:            updateData.note,
+      giftMessage:     updateData.giftMessage,
+      paymentMethod:   updateData.paymentMethodSelected ?? updateData.paymentMethod,
     }
-    if (updateData.note !== undefined) mapped.note = updateData.note
-    if (updateData.giftMessage !== undefined) mapped.giftMessage = updateData.giftMessage
-    if (updateData.paymentMethod) mapped.paymentMethodSelected = updateData.paymentMethod
+
+    if (resolved.customerName  !== undefined) mapped.customerNameSnapshot  = resolved.customerName
+    if (resolved.email         !== undefined) mapped.customerEmailSnapshot = resolved.email
+    if (resolved.phone         !== undefined) mapped.customerPhoneSnapshot = resolved.phone
+    if (resolved.shippingAddress) {
+      mapped.shippingAddressSnapshot =
+        typeof resolved.shippingAddress === 'string'
+          ? resolved.shippingAddress
+          : JSON.stringify(resolved.shippingAddress)
+    }
+    if (resolved.note         !== undefined) mapped.note = resolved.note
+    if (resolved.giftMessage  !== undefined) mapped.giftMessage = resolved.giftMessage
+    if (resolved.paymentMethod !== undefined) mapped.paymentMethodSelected = resolved.paymentMethod
 
     // If items are updated, recalculate totals
     if (updateData.items) {
