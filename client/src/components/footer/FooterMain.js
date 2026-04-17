@@ -11,15 +11,15 @@ function FooterMain() {
       { id: '4', info: 'Contact', path: '/contact' },
     ],
     Brands: [
-      { id: '1', info: 'Zazzle Gifts', path: '/brands/1' },
-      { id: '2', info: 'Giftr Gifts', path: '/brands/2' },
-      { id: '3', info: 'Etsy Gifts', path: '/brands/3' },
+      { id: '1', info: 'Zazzle Gifts', path: '/products?brand=1' },
+      { id: '2', info: 'Giftr Gifts', path: '/products?brand=2' },
+      { id: '3', info: 'Etsy Gifts', path: '/products?brand=3' },
     ],
     Categories: [
-      { id: '1', info: 'Mugs', path: '/products/1' },
-      { id: '2', info: 'Bracelets', path: '/products/2' },
-      { id: '3', info: 'Cards', path: '/products/3' },
-      { id: '4', info: 'Balloons', path: '/products/4' }
+      { id: '1', info: 'Mugs', path: '/products?category=1' },
+      { id: '2', info: 'Bracelets', path: '/products?category=2' },
+      { id: '3', info: 'Cards', path: '/products?category=3' },
+      { id: '4', info: 'Balloons', path: '/products?category=4' }
     ],
     Social: [
       // { id: '1', info: 'Facebook', path: 'https://www.facebook.com/', icon: 'facebook' },
