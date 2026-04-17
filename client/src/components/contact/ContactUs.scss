@@ -1,103 +1,342 @@
-.contact{
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    &-banner{
-        position: relative;
-        width: 100%;
-        height: 300px;
-        overflow: hidden;
-        &-cover{
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.027);
-            z-index: 3;
-            opacity: 1;
-        }
-        &-img{
-            width: 100%;
-            height: auto;
-            position: absolute;
-            bottom: -20%;
-            z-index: 1;
-        }
-        
+@import '../../styles/VariableStyle.scss';
 
-        h1{
-            position: absolute;
-            bottom: 50%;
-            left: 50%;
-            color: aliceblue;
-            transform: translateX(-50%) translateY(50%);
-            font-size: 3rem;
-            font-weight: 600;
-        }
+// ════════════════════════════════════════
+//  CONTACT US PAGE
+// ════════════════════════════════════════
+
+.contact-page {
+  font-family: $font-base;
+  background: $bg-page;
+  padding: 4rem 0 6rem;
+  min-height: 80vh;
+}
+
+.contact-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+// ── Header ─────────────────────────────
+.contact-header {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 3.5rem;
+
+  &__badge {
+    display: inline-block;
+    background: $primary-light;
+    color: $primary;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.85rem;
+    border-radius: $radius-full;
+    margin-bottom: 1rem;
+  }
+
+  &__title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900;
+    color: $text-primary;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    margin: 0 0 1rem;
+
+    &--accent {
+      background: $gradient-primary;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-    &-wrapper{
-        max-width: 992px;
-        text-align: center;
-     
-        &-info{
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap ;
-            width: 100%;
-        }
-        &-content{
-            padding: 10px;
-            text-align: left;
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-            &-address{
-                flex: 2;
-                
-            }
-            &-map{
-                flex: 3;
-               
-            }
-        }
+  }
+
+  &__subtitle {
+    font-size: 1.05rem;
+    color: $text-secondary;
+    line-height: 1.7;
+    margin: 0;
+  }
+}
+
+// ── Main Layout ────────────────────────
+.contact-main {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+// ── Shared Card Style ──────────────────
+.contact-card {
+  background: $bg-card;
+  border-radius: $radius-lg;
+  border: 1px solid $border;
+  padding: 2.5rem;
+  box-shadow: $shadow-md;
+}
+
+// ── Form Card ──────────────────────────
+.contact-form-card {
+  .contact-card__title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: $text-primary;
+    margin: 0 0 0.5rem;
+  }
+
+  .contact-card__subtitle {
+    font-size: 0.95rem;
+    color: $text-muted;
+    margin: 0 0 2rem;
+  }
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  &__row {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    flex: 1;
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: $text-secondary;
     }
+
+    input, textarea {
+      width: 100%;
+      background: $surface;
+      border: 1.5px solid $border;
+      border-radius: $radius-md;
+      padding: 0.8rem 1rem;
+      font-size: 0.95rem;
+      color: $text-primary;
+      transition: $transition-fast;
+      font-family: $font-base;
+
+      &::placeholder {
+        color: $text-muted;
+        opacity: 0.8;
+      }
+
+      &:focus {
+        outline: none;
+        border-color: $primary;
+        background: #fff;
+        box-shadow: 0 0 0 4px $primary-light;
+      }
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+  }
+
+  &__submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: $gradient-primary;
+    color: #fff;
+    border: none;
+    border-radius: $radius-md;
+    padding: 0.9rem 2rem;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: $font-base;
+    cursor: pointer;
+    transition: $transition-base;
+    box-shadow: $shadow-primary;
+    margin-top: 0.5rem;
+
+    svg {
+      width: 1.1rem;
+      height: 1.1rem;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(102, 126, 234, 0.4);
+
+      svg {
+        transform: translateX(3px) translateY(-3px);
+      }
+    }
+  }
 }
-.text-input{
-    flex: auto;
-    height: 2.5rem;
-    width: 22rem;
-    margin: 0.5rem;
-    outline:none;
-    border: 1px solid gainsboro;
-    border-radius: 7px;
+
+// ── Success state ──────────────────────
+.contact-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  background: $surface;
+  border-radius: $radius-md;
+  border: 1px dashed $border;
+
+  &__icon {
+    width: 64px;
+    height: 64px;
+    background: $success-light;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+
+    svg {
+      width: 32px;
+      height: 32px;
+      color: $success;
+    }
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: $text-primary;
+    margin: 0 0 0.5rem;
+  }
+
+  p {
+    font-size: 1rem;
+    color: $text-secondary;
+    margin: 0;
+  }
 }
-.text-area{
-    flex: auto;
-    height: auto;
-    width: 22rem;
-    margin: 0.5rem;
-    outline:none;
-    border: 1px solid gainsboro;
-    border-radius: 7px;
+
+// ── Sidebar Layout ─────────────────────
+.contact-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
-.submit-button{
-    flex: auto;
-    width: 22rem;
-    margin: 0.5rem;
-    height: auto;
-    outline:none;
-    border: 1px solid gainsboro;
-    border-radius: 7px;
-    border: 1px solid gainsboro;
-    color: #636363;
-    font-size: 1.2rem;
-    font-weight: 500;
-    &:hover{
-        background-color: #66d479;
-        color: #ffffff;
-        border: none;
-    }   
+
+// ── Info Card ──────────────────────────
+.contact-info-card {
+  padding: 2rem;
+}
+
+.contact-info__title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: $text-primary;
+  margin: 0 0 1.5rem;
+}
+
+.contact-info__list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.contact-info__item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.contact-info__icon {
+  width: 44px;
+  height: 44px;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: $primary;
+  transition: $transition-fast;
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .contact-info__item:hover & {
+    background: $primary;
+    color: #fff;
+    border-color: $primary;
+  }
+}
+
+.contact-info__text {
+  strong {
+    display: block;
+    font-size: 0.95rem;
+    color: $text-primary;
+    margin-bottom: 0.25rem;
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: $text-secondary;
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+// ── Map Card ───────────────────────────
+.contact-map-card {
+  padding: 0;
+  height: 300px;
+  overflow: hidden;
+  position: relative;
+
+  iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// ── Responsive ─────────────────────────
+@media (max-width: 900px) {
+  .contact-main {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-sidebar {
+    gap: 2rem;
+  }
+
+  .contact-map-card {
+    height: 400px;
+  }
+}
+
+@media (max-width: 600px) {
+  .contact-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .contact-card {
+    padding: 1.5rem;
+  }
+
+  .contact-form__row {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
 }
