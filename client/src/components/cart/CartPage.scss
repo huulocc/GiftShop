@@ -498,6 +498,12 @@
     height: 18px;
     color: $success;
   }
+
+  &--warn {
+    background: $warning-dark;
+
+    svg { color: $warning; }
+  }
 }
 
 @keyframes toastIn {

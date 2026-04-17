@@ -1,88 +1,40 @@
-import React, { createContext, useState, useCallback } from 'react'
+import React, { createContext, useContext, useState, useCallback } from 'react'
 
-/**
- * CompareContext - Manages product comparison list
- * Users can add/remove products to compare side by side
- */
-export const CompareContext = createContext()
+const CompareContext = createContext(null)
+
+const MAX_COMPARE = 4
 
 export function CompareProvider({ children }) {
   const [compareList, setCompareList] = useState([])
 
-  /**
-   * Add product to compare list (max 4 items)
-   * @param {Object} product - Product to add
-   */
   const addToCompare = useCallback((product) => {
     setCompareList((prev) => {
-      // Check if already in list
-      if (prev.some((p) => p.productId === product.productId)) {
-        return prev
-      }
-      // Max 4 items
-      if (prev.length >= 4) {
-        return prev
-      }
+      if (prev.find((p) => p.productId === product.productId)) return prev
+      if (prev.length >= MAX_COMPARE) return prev // max 4
       return [...prev, product]
     })
   }, [])
 
-  /**
-   * Remove product from compare list
-   * @param {number|string} productId - Product ID to remove
-   */
   const removeFromCompare = useCallback((productId) => {
     setCompareList((prev) => prev.filter((p) => p.productId !== productId))
   }, [])
 
-  /**
-   * Check if product is in compare list
-   * @param {number|string} productId - Product ID to check
-   */
+  const clearCompare = useCallback(() => setCompareList([]), [])
+
   const isInCompare = useCallback(
-    (productId) => {
-      return compareList.some((p) => p.productId === productId)
-    },
+    (productId) => compareList.some((p) => p.productId === productId),
     [compareList]
   )
 
-  /**
-   * Clear all products from compare list
-   */
-  const clearCompare = useCallback(() => {
-    setCompareList([])
-  }, [])
-
-  /**
-   * Get compare count
-   */
-  const getCompareCount = useCallback(() => {
-    return compareList.length
-  }, [compareList])
-
   return (
-    <CompareContext.Provider
-      value={{
-        compareList,
-        addToCompare,
-        removeFromCompare,
-        isInCompare,
-        clearCompare,
-        getCompareCount,
-      }}
-    >
+    <CompareContext.Provider value={{ compareList, addToCompare, removeFromCompare, clearCompare, isInCompare, MAX_COMPARE }}>
       {children}
     </CompareContext.Provider>
   )
 }
 
-/**
- * Hook to use CompareContext
- */
 export function useCompare() {
-  const context = React.useContext(CompareContext)
-  if (!context) {
-    throw new Error('useCompare must be used within CompareProvider')
-  }
-  return context
+  const ctx = useContext(CompareContext)
+  if (!ctx) throw new Error('useCompare must be used inside CompareProvider')
+  return ctx
 }
