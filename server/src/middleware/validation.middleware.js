@@ -9,7 +9,13 @@ const { PaymentMethod } = require('../models/order.model')
  */
 function validateCreateOrder(req, res, next) {
   const errors = []
-  const { customerName, email, phone, shippingAddress, items, paymentMethod } = req.body
+  const { customerId, customerName, email, phone, shippingAddress, items, paymentMethod } =
+    req.body
+
+  // Customer ID (UUID)
+  if (!customerId || typeof customerId !== 'string' || customerId.trim().length === 0) {
+    errors.push('customerId is required')
+  }
 
   // Customer name
   if (!customerName || typeof customerName !== 'string' || customerName.trim().length === 0) {
@@ -26,15 +32,15 @@ function validateCreateOrder(req, res, next) {
     }
   }
 
-  // Phone
-  if (!phone || typeof phone !== 'string' || phone.trim().length === 0) {
-    errors.push('phone is required')
+  // Phone (optional — customer_phone_snapshot is nullable in DB)
+  if (phone !== undefined && phone !== null && typeof phone !== 'string') {
+    errors.push('phone must be a string if provided')
   }
 
-  // Shipping address
-  if (!shippingAddress || typeof shippingAddress !== 'object') {
+  // Shipping address (can be string or object)
+  if (!shippingAddress) {
     errors.push('shippingAddress is required')
-  } else {
+  } else if (typeof shippingAddress === 'object') {
     const { street, city, state, zipCode } = shippingAddress
     if (!street) errors.push('shippingAddress.street is required')
     if (!city) errors.push('shippingAddress.city is required')
@@ -116,17 +122,13 @@ function validateUpdateOrder(req, res, next) {
     }
   }
 
-  // If shipping address is provided, validate fields
-  if (shippingAddress !== undefined) {
-    if (typeof shippingAddress !== 'object') {
-      errors.push('shippingAddress must be an object')
-    } else {
-      const { street, city, state, zipCode } = shippingAddress
-      if (!street) errors.push('shippingAddress.street is required')
-      if (!city) errors.push('shippingAddress.city is required')
-      if (!state) errors.push('shippingAddress.state is required')
-      if (!zipCode) errors.push('shippingAddress.zipCode is required')
-    }
+  // If shipping address is provided as an object, validate fields
+  if (shippingAddress !== undefined && typeof shippingAddress === 'object') {
+    const { street, city, state, zipCode } = shippingAddress
+    if (!street) errors.push('shippingAddress.street is required')
+    if (!city) errors.push('shippingAddress.city is required')
+    if (!state) errors.push('shippingAddress.state is required')
+    if (!zipCode) errors.push('shippingAddress.zipCode is required')
   }
 
   if (errors.length > 0) {
@@ -141,7 +143,7 @@ function validateUpdateOrder(req, res, next) {
 }
 
 /**
- * Validate order ID path parameter
+ * Validate order ID path parameter (UUID format)
  */
 function validateOrderId(req, res, next) {
   const { id } = req.params
@@ -151,6 +153,16 @@ function validateOrderId(req, res, next) {
       error: 'Invalid order ID',
     })
   }
+
+  // Validate UUID format
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  if (!uuidRegex.test(id)) {
+    return res.status(400).json({
+      success: false,
+      error: 'Order ID must be a valid UUID',
+    })
+  }
+
   next()
 }
 

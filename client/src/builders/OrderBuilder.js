@@ -7,6 +7,7 @@
  */
 class OrderBuilder {
   constructor() {
+    this._customerId = null
     this._customerName = ''
     this._email = ''
     this._phone = ''
@@ -14,6 +15,11 @@ class OrderBuilder {
     this._items = []
     this._giftMessage = ''
     this._paymentMethod = ''
+  }
+
+  setCustomerId(id) {
+    this._customerId = id
+    return this
   }
 
   setCustomerName(name) {
@@ -99,6 +105,7 @@ class OrderBuilder {
    */
   build() {
     return {
+      customerId: this._customerId,
       customerName: this._customerName,
       email: this._email,
       phone: this._phone,

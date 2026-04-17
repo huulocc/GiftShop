@@ -1,16 +1,26 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import OrderForm from './OrderForm'
 import OrderList from './OrderList'
+import { useCheckout } from '../../contexts/CheckoutContext'
 import './CreateOrderPage.scss'
 
 /**
  * CreateOrderPage - Main page wrapper for Order features
  *
  * Contains tabs to switch between Create Order form and Order List.
+ * Auto-switches to Create Order tab if coming from cart checkout.
  */
 function CreateOrderPage() {
+  const { checkoutData } = useCheckout()
   const [activeTab, setActiveTab] = useState('list')
   const [refreshKey, setRefreshKey] = useState(0)
+
+  // Auto-switch to create tab if there's checkout data
+  useEffect(() => {
+    if (checkoutData?.items && checkoutData.items.length > 0) {
+      setActiveTab('create')
+    }
+  }, [checkoutData])
 
   /**
    * Called when a new order is created successfully

@@ -140,7 +140,34 @@
     background: $primary-light;
     color: $primary;
   }
+
+  // "All Products" special item
+  &--all {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: $primary;
+    font-weight: 700;
+
+    svg {
+      width: 0.85rem;
+      height: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    &:hover {
+      background: $primary-light;
+      color: $primary-dark;
+    }
+  }
 }
+
+.nav-dropdown-divider {
+  height: 1px;
+  background: $border;
+  margin: 0.25rem 0.75rem;
+}
+
 
 /* ══════════════════════════════════════
    RESPONSIVE — Mobile

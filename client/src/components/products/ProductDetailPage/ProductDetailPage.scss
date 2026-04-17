@@ -1,0 +1,461 @@
+@import '../../../styles/VariableStyle.scss';
+
+// ════════════════════════════════════════
+//  PRODUCT DETAIL PAGE
+// ════════════════════════════════════════
+
+.pdp-page {
+  font-family: $font-base;
+  background: $bg-page;
+  padding: 2rem 0 5rem;
+  min-height: 60vh;
+}
+
+.pdp-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+// ── Loading / Error ────────────────────
+.pdp-loading,
+.pdp-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 1rem;
+  color: $text-muted;
+  font-family: $font-base;
+
+  svg {
+    width: 3rem;
+    height: 3rem;
+    opacity: 0.4;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $text-secondary;
+    margin: 0;
+  }
+}
+
+.pdp-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid $border;
+  border-top-color: $primary;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.pdp-back-btn {
+  color: $primary;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.5rem 1.25rem;
+  border: 1.5px solid $primary;
+  border-radius: $radius-md;
+  transition: $transition-fast;
+
+  &:hover { background: $primary-light; }
+}
+
+// ── Breadcrumb ─────────────────────────
+.pdp-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 2rem;
+  font-size: 0.8rem;
+
+  &__link {
+    color: $text-muted;
+    text-decoration: none;
+    transition: color 0.15s;
+
+    &:hover { color: $primary; }
+  }
+
+  &__sep {
+    color: $border;
+  }
+
+  &__current {
+    color: $text-secondary;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 260px;
+  }
+}
+
+// ── Main grid ──────────────────────────
+.pdp-main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3.5rem;
+  align-items: start;
+}
+
+// ── Image panel ────────────────────────
+.pdp-image-panel {
+  position: sticky;
+  top: 1.5rem;
+}
+
+.pdp-image-wrap {
+  position: relative;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  background: $bg-card;
+  border: 1px solid $border;
+  box-shadow: $shadow-md;
+  aspect-ratio: 1;
+}
+
+.pdp-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+
+  &:hover {
+    transform: scale(1.04);
+  }
+}
+
+.pdp-image-badge {
+  position: absolute;
+  top: 1rem;
+  left: 0;
+  background: $gradient-primary;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.85rem;
+  border-radius: 0 $radius-sm $radius-sm 0;
+}
+
+.pdp-image-oos {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: $danger;
+  letter-spacing: 0.04em;
+}
+
+// ── Info panel ─────────────────────────
+.pdp-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.pdp-category-tag {
+  display: inline-block;
+  background: $primary-light;
+  color: $primary;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.75rem;
+  border-radius: $radius-full;
+  text-decoration: none;
+  transition: $transition-fast;
+  align-self: flex-start;
+
+  &:hover { background: $primary; color: #fff; }
+}
+
+.pdp-title {
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  font-weight: 800;
+  color: $text-primary;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.pdp-price-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pdp-price {
+  font-size: 2.2rem;
+  font-weight: 900;
+  background: $gradient-primary;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.pdp-stock-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.3rem 0.75rem;
+  border-radius: $radius-full;
+
+  svg {
+    width: 0.85rem;
+    height: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  &--in {
+    background: $success-light;
+    color: $success-dark;
+  }
+
+  &--out {
+    background: $danger-light;
+    color: $danger-dark;
+  }
+}
+
+.pdp-description {
+  font-size: 0.95rem;
+  color: $text-secondary;
+  line-height: 1.75;
+  margin: 0;
+  padding: 1rem 1.25rem;
+  background: $surface;
+  border-radius: $radius-md;
+  border-left: 3px solid $primary-light;
+}
+
+// ── Meta chips ─────────────────────────
+.pdp-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+}
+
+.pdp-meta-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  padding: 0.25rem 0;
+
+  & + & {
+    border-top: 1px solid $border-light;
+  }
+}
+
+.pdp-meta-label {
+  color: $text-muted;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+}
+
+.pdp-meta-value {
+  color: $text-primary;
+  font-weight: 500;
+}
+
+// ── Quantity ───────────────────────────
+.pdp-qty-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pdp-qty-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $text-secondary;
+  min-width: 60px;
+}
+
+.pdp-qty-control {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid $border;
+  border-radius: $radius-md;
+  overflow: hidden;
+}
+
+.pdp-qty-btn {
+  width: 36px;
+  height: 36px;
+  background: $surface;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: $text-secondary;
+  cursor: pointer;
+  transition: $transition-fast;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover:not(:disabled) {
+    background: $primary-light;
+    color: $primary;
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}
+
+.pdp-qty-value {
+  width: 44px;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: $text-primary;
+  border-left: 1px solid $border;
+  border-right: 1px solid $border;
+  line-height: 36px;
+}
+
+// ── Action buttons ─────────────────────
+.pdp-actions {
+  display: flex;
+  gap: 0.875rem;
+  flex-wrap: wrap;
+}
+
+.pdp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  border-radius: $radius-md;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: $transition-base;
+  font-family: $font-base;
+
+  svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  &--primary {
+    background: $gradient-primary;
+    color: #fff;
+    box-shadow: $shadow-primary;
+    flex: 1;
+    justify-content: center;
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 10px 28px rgba(102, 126, 234, 0.45);
+      transform: translateY(-1px);
+    }
+  }
+
+  &--outline {
+    background: $bg-card;
+    color: $text-secondary;
+    border: 1.5px solid $border;
+
+    &:hover:not(:disabled) {
+      border-color: $primary;
+      color: $primary;
+      background: $primary-light;
+    }
+  }
+
+  &--active {
+    border-color: $primary !important;
+    color: $primary !important;
+    background: $primary-light !important;
+  }
+
+  &--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// ── Toast ──────────────────────────────
+.pdp-toast {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: $success-light;
+  color: $success-dark;
+  border: 1px solid lighten(#48bb78, 25%);
+  border-radius: $radius-md;
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  animation: fadeIn 0.25s ease;
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+
+  &--warn {
+    background: $warning-light;
+    color: $warning-dark;
+    border-color: $warning;
+
+    svg { color: $warning-dark; }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── Responsive ─────────────────────────
+@media (max-width: 768px) {
+  .pdp-main {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .pdp-image-panel {
+    position: static;
+  }
+
+  .pdp-price { font-size: 1.75rem; }
+
+  .pdp-btn--primary { flex: unset; width: 100%; }
+
+  .pdp-actions { flex-direction: column; }
+}

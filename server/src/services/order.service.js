@@ -6,58 +6,66 @@ const { OrderBuilder, OrderStatus } = require('../models/order.model')
  *
  * Handles all business logic for orders.
  * Depends on repository for data access (not directly on data source).
- * This layer is database-agnostic and ready for DB integration.
+ * All methods are async since the repository now uses PostgreSQL.
  */
 class OrderService {
   /**
    * Create a new order using the Builder pattern
    * @param {Object} orderData - Raw order data from request
-   * @returns {Object} created order
+   * @returns {Promise<Object>} created order
    */
-  createOrder(orderData) {
+  async createOrder(orderData) {
     const {
+      customerId,
+      staffId,
       customerName,
       email,
       phone,
       shippingAddress,
       items,
+      note,
       giftMessage,
       paymentMethod,
+      discountAmount,
     } = orderData
 
     // Use Builder pattern to construct the order step by step
     const builder = new OrderBuilder()
 
     const order = builder
+      .setCustomerId(customerId)
+      .setStaffId(staffId || null)
       .setCustomerName(customerName)
       .setEmail(email)
       .setPhone(phone)
       .setShippingAddress(shippingAddress)
       .setItems(items)
+      .setNote(note || '')
       .setGiftMessage(giftMessage || '')
       .setPaymentMethod(paymentMethod)
+      .setDiscountAmount(discountAmount || 0)
       .build()
 
     // Persist through repository
-    const created = orderRepository.create(order.toJSON())
+    const created = await orderRepository.create(order.toJSON())
     return created
   }
 
   /**
    * Get all orders with optional filtering
    * @param {Object} options - { status, page, limit }
-   * @returns {{ orders: Array, total: number }}
+   * @returns {Promise<{ orders: Array, total: number }>}
    */
-  getAllOrders(options) {
+  async getAllOrders(options) {
     return orderRepository.findAll(options)
   }
 
   /**
    * Get a single order by ID
    * @param {string} id
-   * @returns {Object|null}
+   * @returns {Promise<Object|null>}
    */
-  getOrderById(id) {
+  async getOrderById(id) {
     return orderRepository.findById(id)
   }
 
@@ -65,11 +73,11 @@ class OrderService {
    * Update order status
    * @param {string} id
    * @param {string} newStatus
-   * @returns {Object} updated order
+   * @returns {Promise<Object>} updated order
    * @throws {Error} if order not found or invalid transition
    */
-  updateOrderStatus(id, newStatus) {
-    const order = orderRepository.findById(id)
+  async updateOrderStatus(id, newStatus) {
+    const order = await orderRepository.findById(id)
     if (!order) {
       const error = new Error('Order not found')
       error.statusCode = 404
@@ -79,18 +87,21 @@ class OrderService {
     // Validate status transition
     this._validateStatusTransition(order.status, newStatus)
 
-    return orderRepository.update(id, { status: newStatus })
+    return orderRepository.update(id, {
+      status: newStatus,
+      _previousStatus: order.status,
+    })
   }
 
   /**
    * Update order details (items, address, etc.)
    * @param {string} id
    * @param {Object} updateData
-   * @returns {Object} updated order
+   * @returns {Promise<Object>} updated order
    * @throws {Error} if order not found or cancelled
    */
-  updateOrderDetails(id, updateData) {
-    const order = orderRepository.findById(id)
+  async updateOrderDetails(id, updateData) {
+    const order = await orderRepository.findById(id)
     if (!order) {
       const error = new Error('Order not found')
       error.statusCode = 404
@@ -104,21 +115,51 @@ class OrderService {
       throw error
     }
 
-    // If items are updated, recalculate total
+    // Map request fields to DB-compatible fields.
+    // Accept both short aliases (from client form) and full snapshot keys
+    // (sent directly by OrderActions after the normalisation fix).
+    const mapped = {}
+
+    const resolved = {
+      customerName:    updateData.customerNameSnapshot  ?? updateData.customerName,
+      email:           updateData.customerEmailSnapshot ?? updateData.email,
+      phone:           updateData.customerPhoneSnapshot ?? updateData.phone,
+      shippingAddress: updateData.shippingAddressSnapshot ?? updateData.shippingAddress,
+      note:            updateData.note,
+      giftMessage:     updateData.giftMessage,
+      paymentMethod:   updateData.paymentMethodSelected ?? updateData.paymentMethod,
+    }
+
+    if (resolved.customerName  !== undefined) mapped.customerNameSnapshot  = resolved.customerName
+    if (resolved.email         !== undefined) mapped.customerEmailSnapshot = resolved.email
+    if (resolved.phone         !== undefined) mapped.customerPhoneSnapshot = resolved.phone
+    if (resolved.shippingAddress) {
+      mapped.shippingAddressSnapshot =
+        typeof resolved.shippingAddress === 'string'
+          ? resolved.shippingAddress
+          : JSON.stringify(resolved.shippingAddress)
+    }
+    if (resolved.note         !== undefined) mapped.note = resolved.note
+    if (resolved.giftMessage  !== undefined) mapped.giftMessage = resolved.giftMessage
+    if (resolved.paymentMethod !== undefined) mapped.paymentMethodSelected = resolved.paymentMethod
+
+    // If items are updated, recalculate totals
     if (updateData.items) {
-      updateData.items = updateData.items.map((item) => ({
+      mapped.items = updateData.items.map((item) => ({
         productId: item.productId,
         productName: item.productName,
         quantity: item.quantity,
         price: parseFloat(item.price),
       }))
-      updateData.totalAmount = updateData.items.reduce(
+      const subtotal = mapped.items.reduce(
         (sum, item) => sum + item.price * item.quantity,
         0
       )
+      mapped.subtotal = subtotal
+      mapped.totalAmount = subtotal - (updateData.discountAmount || order.discountAmount || 0)
     }
 
-    return orderRepository.update(id, updateData)
+    return orderRepository.update(id, mapped)
   }
 
   /**
@@ -129,17 +170,19 @@ class OrderService {
    */
   _validateStatusTransition(currentStatus, newStatus) {
     const validTransitions = {
-      [OrderStatus.PENDING]: [OrderStatus.PLACED],
-      [OrderStatus.PLACED]: [OrderStatus.CANCELLED],
+      [OrderStatus.PENDING]: [OrderStatus.PLACED, OrderStatus.CANCELLED],
+      [OrderStatus.PLACED]: [OrderStatus.PAID, OrderStatus.CANCELLED],
+      [OrderStatus.PAID]: [OrderStatus.COMPLETED, OrderStatus.CANCELLED],
+      [OrderStatus.COMPLETED]: [],
       [OrderStatus.CANCELLED]: [],
     }
 
     const allowed = validTransitions[currentStatus] || []
     if (!allowed.includes(newStatus)) {
       const error = new Error(
-        `Order cannot be ${newStatus === OrderStatus.PLACED ? 'placed' : 'cancelled'}`
+        `Cannot transition from '${currentStatus}' to '${newStatus}'`
       )
-      error.details = `Current status: ${currentStatus}`
+      error.details = `Current status: ${currentStatus}. Allowed: ${allowed.join(', ') || 'none'}`
       error.statusCode = 400
       throw error
     }

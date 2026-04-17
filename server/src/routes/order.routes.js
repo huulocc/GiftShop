@@ -6,6 +6,7 @@ const {
   validateUpdateOrder,
   validateOrderId,
 } = require('../middleware/validation.middleware')
+const { requireAuth } = require('../middleware/auth.middleware')
 
 /**
  * Order Routes
@@ -18,11 +19,11 @@ const {
  * PUT    /api/orders/:id      - Update an order (Command pattern)
  */
 
-// Create order - Builder pattern
-router.post('/', validateCreateOrder, (req, res) => orderController.createOrder(req, res))
+// Create order - Builder pattern (requires authentication)
+router.post('/', requireAuth, validateCreateOrder, (req, res) => orderController.createOrder(req, res))
 
-// Get all orders
-router.get('/', (req, res) => orderController.getAllOrders(req, res))
+// Get all orders (customers see only their own, managers see all)
+router.get('/', requireAuth, (req, res) => orderController.getAllOrders(req, res))
 
 // Get order by ID
 router.get('/:id', validateOrderId, (req, res) => orderController.getOrderById(req, res))

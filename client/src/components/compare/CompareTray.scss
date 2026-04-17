@@ -1,0 +1,161 @@
+@import '../../styles/VariableStyle.scss';
+
+.compare-tray {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 500;
+  background: $bg-card;
+  border-top: 1px solid $border;
+  box-shadow: 0 -8px 32px rgba(102, 126, 234, 0.15);
+  animation: slideTrayUp 0.3s ease;
+
+  &__inner {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: $text-secondary;
+    white-space: nowrap;
+
+    svg {
+      width: 1.1rem;
+      height: 1.1rem;
+      color: $primary;
+      flex-shrink: 0;
+    }
+
+    strong {
+      color: $primary;
+    }
+  }
+
+  &__products {
+    display: flex;
+    gap: 0.75rem;
+    flex: 1;
+    flex-wrap: wrap;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: $surface;
+    border: 1px solid $border;
+    border-radius: $radius-md;
+    padding: 0.4rem 0.65rem 0.4rem 0.5rem;
+    position: relative;
+  }
+
+  &__img {
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
+    border-radius: $radius-sm;
+    flex-shrink: 0;
+    background: $bg-page;
+  }
+
+  &__name {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: $text-primary;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.15rem;
+    color: $text-muted;
+    display: flex;
+    flex-shrink: 0;
+    border-radius: $radius-sm;
+    transition: $transition-fast;
+
+    svg {
+      width: 0.85rem;
+      height: 0.85rem;
+    }
+
+    &:hover {
+      color: $danger;
+      background: $danger-light;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
+  &__clear {
+    background: none;
+    border: 1.5px solid $border;
+    border-radius: $radius-md;
+    padding: 0.5rem 1rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: $text-secondary;
+    cursor: pointer;
+    transition: $transition-fast;
+
+    &:hover {
+      border-color: $danger;
+      color: $danger;
+    }
+  }
+
+  &__go {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: $gradient-primary;
+    color: #fff;
+    border-radius: $radius-md;
+    padding: 0.55rem 1.2rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: $shadow-primary;
+    transition: $transition-base;
+
+    svg {
+      width: 0.85rem;
+      height: 0.85rem;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.45);
+
+      svg { transform: translateX(3px); }
+    }
+  }
+}
+
+@keyframes slideTrayUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}

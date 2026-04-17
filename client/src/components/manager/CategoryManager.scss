@@ -1,0 +1,17 @@
+// CategoryManager-specific styles are minimal — most styles come from ManagerDashboard.scss
+// This file exists in case we need component-specific overrides
+
+.cat-mgr {
+  &-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+
+    h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin: 0;
+    }
+  }
+}

@@ -15,9 +15,23 @@ class OrderController {
    * POST /api/orders
    * Create a new order using Builder pattern
    */
-  createOrder(req, res) {
+  async createOrder(req, res) {
     try {
-      const order = orderService.createOrder(req.body)
+      const sessionUser = req.session && req.session.user
+      let orderData = { ...req.body }
+
+      if (sessionUser) {
+        if (sessionUser.roleCode === 'customer') {
+          // Customers always create orders for themselves
+          orderData.customerId = sessionUser.userId
+        } else if (sessionUser.roleCode === 'manager') {
+          // Managers must supply a customerId in the body
+          // (already validated by middleware, no override needed)
+          orderData.staffId = sessionUser.userId
+        }
+      }
+
+      const order = await orderService.createOrder(orderData)
       return res.status(201).json({
         success: true,
         data: order,
@@ -35,13 +49,22 @@ class OrderController {
    * GET /api/orders
    * Get all orders with optional filtering and pagination
    */
-  getAllOrders(req, res) {
+  async getAllOrders(req, res) {
     try {
       const { status, page = 1, limit = 10 } = req.query
-      const result = orderService.getAllOrders({
+      const sessionUser = req.session && req.session.user
+
+      // Customers can only see their own orders
+      const customerId =
+        sessionUser && sessionUser.roleCode === 'customer'
+          ? sessionUser.userId
+          : req.query.customerId || undefined
+
+      const result = await orderService.getAllOrders({
         status,
         page: parseInt(page),
         limit: parseInt(limit),
+        customerId,
       })
 
       return res.status(200).json({
@@ -65,9 +88,9 @@ class OrderController {
    * GET /api/orders/:id
    * Get a single order by ID
    */
-  getOrderById(req, res) {
+  async getOrderById(req, res) {
     try {
-      const order = orderService.getOrderById(req.params.id)
+      const order = await orderService.getOrderById(req.params.id)
       if (!order) {
         return res.status(404).json({
           success: false,
@@ -91,10 +114,10 @@ class OrderController {
    * PATCH /api/orders/:id/place
    * Place an order using Command pattern
    */
-  placeOrder(req, res) {
+  async placeOrder(req, res) {
     try {
       const command = new PlaceOrderCommand(orderService, req.params.id)
-      const result = orderCommandInvoker.executeCommand(command)
+      const result = await orderCommandInvoker.executeCommand(command)
 
       return res.status(200).json({
         success: true,
@@ -115,10 +138,10 @@ class OrderController {
    * PATCH /api/orders/:id/cancel
    * Cancel an order using Command pattern
    */
-  cancelOrder(req, res) {
+  async cancelOrder(req, res) {
     try {
       const command = new CancelOrderCommand(orderService, req.params.id)
-      const result = orderCommandInvoker.executeCommand(command)
+      const result = await orderCommandInvoker.executeCommand(command)
 
       return res.status(200).json({
         success: true,
@@ -139,10 +162,10 @@ class OrderController {
    * PUT /api/orders/:id
    * Update an order using Command pattern
    */
-  updateOrder(req, res) {
+  async updateOrder(req, res) {
     try {
       const command = new UpdateOrderCommand(orderService, req.params.id, req.body)
-      const result = orderCommandInvoker.executeCommand(command)
+      const result = await orderCommandInvoker.executeCommand(command)
 
       return res.status(200).json({
         success: true,
