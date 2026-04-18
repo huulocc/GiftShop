@@ -6,13 +6,9 @@
  *
  * Class hierarchy:
  *   Product (base)
- *   ├── GeneralProduct  — default product type
- *   ├── HandmadeProduct — handcrafted items with artisan info
- *   └── DigitalProduct  — downloadable/digital goods
- *
- * Usage:
- *   const product = ProductFactory.create('handmade', { ... })
- *   product.getTypeInfo()  // → { type: 'handmade', label: 'Handmade', ... }
+ *   ├── BookProduct
+ *   ├── ClothesProduct
+ *   └── ElectronicsProduct
  */
 
 /**
@@ -42,7 +38,7 @@ class Product {
     this.categoryId = categoryId
     this.categoryName = categoryName || null
     this.productName = productName
-    this.productType = productType || 'general'
+    this.productType = productType || 'book'
     this.description = description || null
     this.price = parseFloat(price) || 0
     this.stockQuantity = parseInt(stockQuantity, 10) || 0
@@ -104,54 +100,52 @@ class Product {
 }
 
 /**
- * GeneralProduct — Default product type
+ * BookProduct
  */
-class GeneralProduct extends Product {
+class BookProduct extends Product {
   constructor(data) {
     super(data)
   }
 
   getTypeInfo() {
     return {
-      type: 'general',
-      label: 'General',
-      description: 'Standard gift shop product',
+      type: 'book',
+      label: 'Book',
+      description: 'Book and printed publication items',
     }
   }
 }
 
 /**
- * HandmadeProduct — Handcrafted / artisan items
- * These may have longer lead times and unique characteristics.
+ * ClothesProduct
  */
-class HandmadeProduct extends Product {
+class ClothesProduct extends Product {
   constructor(data) {
     super(data)
   }
 
   getTypeInfo() {
     return {
-      type: 'handmade',
-      label: 'Handmade',
-      description: 'Handcrafted artisan product — may require extra processing time',
+      type: 'clothes',
+      label: 'Clothes',
+      description: 'Wearable items such as shirts, jackets, and accessories',
     }
   }
 }
 
 /**
- * DigitalProduct — Downloadable / digital goods
- * No shipping required.
+ * ElectronicsProduct
  */
-class DigitalProduct extends Product {
+class ElectronicsProduct extends Product {
   constructor(data) {
     super(data)
   }
 
   getTypeInfo() {
     return {
-      type: 'digital',
-      label: 'Digital',
-      description: 'Digital product — instant download, no shipping',
+      type: 'electronics',
+      label: 'Electronics',
+      description: 'Electronic devices and smart accessories',
     }
   }
 }
@@ -159,10 +153,24 @@ class DigitalProduct extends Product {
 // ── Valid product types (aligned with DB usage) ──────────
 
 const ProductType = Object.freeze({
-  GENERAL: 'general',
-  HANDMADE: 'handmade',
-  DIGITAL: 'digital',
+  BOOK: 'book',
+  CLOTHES: 'clothes',
+  ELECTRONICS: 'electronics',
 })
+
+const LEGACY_TYPE_ALIAS = Object.freeze({
+  general: ProductType.BOOK,
+  handmade: ProductType.CLOTHES,
+  digital: ProductType.ELECTRONICS,
+})
+
+function normalizeProductType(type) {
+  const normalized = (type || '').toString().trim().toLowerCase()
+  if (!normalized) return ProductType.BOOK
+  if (Object.values(ProductType).includes(normalized)) return normalized
+  if (LEGACY_TYPE_ALIAS[normalized]) return LEGACY_TYPE_ALIAS[normalized]
+  return ProductType.BOOK
+}
 
 // ── Factory Method ──────────────────────────────────────
 
@@ -176,28 +184,35 @@ const ProductType = Object.freeze({
 class ProductFactory {
   /**
    * Create a Product instance of the correct subtype
-   * @param {string} type - product_type from DB ('general', 'handmade', 'digital')
+   * @param {string} type - product_type from DB/input
    * @param {Object} data - product data from DB row
    * @returns {Product} instance of the correct subtype
    */
   static create(type, data) {
-    switch (type) {
-      case ProductType.HANDMADE:
-        return new HandmadeProduct(data)
-      case ProductType.DIGITAL:
-        return new DigitalProduct(data)
-      case ProductType.GENERAL:
+    const normalizedType = normalizeProductType(type)
+    const normalizedData = {
+      ...data,
+      productType: normalizedType,
+    }
+
+    switch (normalizedType) {
+      case ProductType.CLOTHES:
+        return new ClothesProduct(normalizedData)
+      case ProductType.ELECTRONICS:
+        return new ElectronicsProduct(normalizedData)
+      case ProductType.BOOK:
       default:
-        return new GeneralProduct(data)
+        return new BookProduct(normalizedData)
     }
   }
 }
 
 module.exports = {
   Product,
-  GeneralProduct,
-  HandmadeProduct,
-  DigitalProduct,
+  BookProduct,
+  ClothesProduct,
+  ElectronicsProduct,
   ProductFactory,
   ProductType,
+  normalizeProductType,
 }

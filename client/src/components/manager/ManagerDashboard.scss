@@ -323,6 +323,22 @@
   font-weight: 600;
   letter-spacing: 0.02em;
 
+  &--book {
+    background: #eef2ff;
+    color: #5a67d8;
+  }
+
+  &--clothes {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  &--electronics {
+    background: #e0f2fe;
+    color: #0369a1;
+  }
+
+  // Legacy badges for old product_type values.
   &--general {
     background: #eef2ff;
     color: #5a67d8;

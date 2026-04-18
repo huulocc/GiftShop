@@ -15,6 +15,7 @@ import AboutUs from './components/about/AboutUs';
 import ComparePage from './components/compare/ComparePage';
 import CompareTray from './components/compare/CompareTray';
 import ProductDetailPage from './components/products/ProductDetailPage/ProductDetailPage';
+import PaymentResult from './components/payment/PaymentResult';
 import { AuthProvider } from './services/AuthContext';
 import { CompareProvider } from './contexts/CompareContext';
 import { CheckoutProvider } from './contexts/CheckoutContext';
@@ -42,6 +43,7 @@ function App() {
                 <Route path="about-us" element={<AboutUs />} />
                 <Route path="compare" element={<ComparePage />} />
                 <Route path="product/:id" element={<ProductDetailPage />} />
+                <Route path="payments/return" element={<PaymentResult />} />
               </Routes>
               <CompareTray />
               <FooterMain />

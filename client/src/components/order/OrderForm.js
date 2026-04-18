@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react'
 import OrderBuilder from '../../builders/OrderBuilder'
 import orderService from '../../services/orderService'
+import paymentService from '../../services/paymentService'
 import productService from '../../services/productService'
 import { useAuth } from '../../services/AuthContext'
 import { useCheckout } from '../../contexts/CheckoutContext'
@@ -270,6 +271,19 @@ function OrderForm({ onOrderCreated }) {
       const result = await orderService.createOrder(orderPayload)
 
       if (result.success) {
+        const createdOrder = result.data
+        const onlineMethods = ['credit_card', 'paypal']
+
+        if (onlineMethods.includes(paymentMethod)) {
+          const paymentResult = await paymentService.createPayment(createdOrder.orderId, paymentMethod)
+          const payUrl = paymentResult?.data?.payUrl
+
+          if (payUrl) {
+            window.location.href = payUrl
+            return
+          }
+        }
+
         // Reset form
         if (isManager) handleClearCustomer()
         setStreet('')
@@ -281,10 +295,10 @@ function OrderForm({ onOrderCreated }) {
         setPaymentMethod('credit_card')
         setProductSearch('')
 
-        setSuccessMsg(`Order ${result.data?.orderNumber || ''} created successfully!`)
+        setSuccessMsg(`Order ${createdOrder?.orderNumber || ''} created successfully!`)
         setTimeout(() => setSuccessMsg(''), 5000)
 
-        if (onOrderCreated) onOrderCreated(result.data)
+        if (onOrderCreated) onOrderCreated(createdOrder)
       }
     } catch (error) {
       const errorData = error.response?.data

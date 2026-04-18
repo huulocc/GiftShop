@@ -102,7 +102,7 @@ class ProductRepository {
       `INSERT INTO products (product_name, category_id, product_type, description, price, stock_quantity, image_url, created_by, updated_by)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $8)
        RETURNING *`,
-      [productName, categoryId, productType || 'general', description || null, price, stockQuantity || 0, imageUrl || null, createdBy]
+      [productName, categoryId, productType || 'book', description || null, price, stockQuantity || 0, imageUrl || null, createdBy]
     )
     // Re-fetch with joins
     return this.findById(result.rows[0].product_id)

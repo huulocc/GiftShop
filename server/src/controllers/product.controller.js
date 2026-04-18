@@ -80,7 +80,7 @@ class ProductController {
         {
           productName: productName.trim(),
           categoryId,
-          productType: productType || 'general',
+          productType: productType || 'book',
           description: description?.trim() || null,
           price: parseFloat(price),
           stockQuantity: parseInt(stockQuantity, 10) || 0,

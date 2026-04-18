@@ -1,13 +1,17 @@
 const path = require('path')
 const dotenv = require('dotenv')
+const fs = require('fs')
 
-if (envPath) {
-  dotenv.config({ path: envPath })
-} else {
-  dotenv.config()
-}
+const envPaths = [
+  path.join(__dirname, '..', '..', '.env'),
+  path.join(__dirname, '..', '.env'),
+]
 
-const app = require('./app')
+envPaths.forEach((envPath) => {
+  if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath, override: true })
+  }
+})
 
 const app = require('./app')
 

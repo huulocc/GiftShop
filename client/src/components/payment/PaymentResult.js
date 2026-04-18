@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './PaymentResult.scss';
-import { getLastPayment } from '../../services/cartService';
 
 function PaymentResult() {
   const location = useLocation();
@@ -14,17 +13,23 @@ function PaymentResult() {
 
     const requestId = searchParams.get('requestId') || searchParams.get('requestid');
     if (requestId) {
+      const resultCode = Number(searchParams.get('resultCode') || '0');
+      const completedFromResultCode = resultCode === 0 ? 'completed' : 'failed';
+
       return {
         orderid: searchParams.get('orderId') || searchParams.get('orderid') || '',
         requestid: requestId,
         transid: searchParams.get('transId') || searchParams.get('transid') || '',
         payment_method: searchParams.get('paymentMethod') || searchParams.get('payment_method') || 'momo',
-        payment_status: searchParams.get('paymentStatus') || searchParams.get('payment_status') || 'completed',
+        payment_status:
+          searchParams.get('paymentStatus') ||
+          searchParams.get('payment_status') ||
+          completedFromResultCode,
         amount: searchParams.get('amount') || '0',
       };
     }
 
-    //return getLastPayment();
+    return null;
   }, [location.state, searchParams]);
 
   const success = payment?.payment_status === 'completed';

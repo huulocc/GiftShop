@@ -7,6 +7,7 @@ const authRoutes = require('./routes/auth.routes')
 const categoryRoutes = require('./routes/category.routes')
 const productRoutes = require('./routes/product.routes')
 const searchRoutes = require('./routes/search.routes')
+const paymentRoutes = require('./routes/payment.routes')
 
 const app = express()
 
@@ -52,5 +53,9 @@ app.use('/api/products', productRoutes)
 
 // Search routes
 app.use('/api/search', searchRoutes)
+
+// Payment routes (API + public callback/IPN endpoints)
+app.use('/api/payments', paymentRoutes)
+app.use('/payments', paymentRoutes)
 
 module.exports = app

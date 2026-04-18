@@ -19,7 +19,7 @@ function ProductManager() {
   const emptyForm = {
     productName: '',
     categoryId: '',
-    productType: 'general',
+    productType: 'book',
     description: '',
     price: '',
     stockQuantity: '0',
@@ -370,9 +370,9 @@ function ProductManager() {
                 <div className="mgr-form-group">
                   <label>Type</label>
                   <select value={form.productType} onChange={(e) => setForm({ ...form, productType: e.target.value })}>
-                    <option value="general">General</option>
-                    <option value="handmade">Handmade</option>
-                    <option value="digital">Digital</option>
+                    <option value="book">Book</option>
+                    <option value="clothes">Clothes</option>
+                    <option value="electronics">Electronics</option>
                   </select>
                 </div>
               </div>
