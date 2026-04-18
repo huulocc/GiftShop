@@ -1,6 +1,6 @@
 const productRepository = require('../repositories/product.repository')
 const categoryRepository = require('../repositories/category.repository')
-const { ProductFactory, ProductType } = require('../models/product.model')
+const { ProductFactory, ProductType, normalizeProductType } = require('../models/product.model')
 
 /**
  * ProductService - Business Logic Layer
@@ -9,6 +9,24 @@ const { ProductFactory, ProductType } = require('../models/product.model')
  * into the correct Product subtype before returning to the controller.
  */
 class ProductService {
+  _isAcceptedProductType(type) {
+    const rawType = (type || '').toString().trim().toLowerCase()
+    return ['book', 'clothes', 'electronics', 'general', 'handmade', 'digital'].includes(rawType)
+  }
+
+  _toCreatePayload(product, userId) {
+    return {
+      productName: product.productName,
+      categoryId: product.categoryId,
+      productType: product.productType,
+      description: product.description,
+      price: product.price,
+      stockQuantity: product.stockQuantity,
+      imageUrl: product.imageUrl,
+      createdBy: userId,
+    }
+  }
+
   /**
    * Get products with filters, wrapped via Factory
    * @param {{ categoryId?: string, search?: string, sort?: string, page?: string|number, limit?: string|number }} options
@@ -64,18 +82,20 @@ class ProductService {
       throw error
     }
 
-    // Validate product_type
-    const validTypes = Object.values(ProductType)
-    if (data.productType && !validTypes.includes(data.productType)) {
-      const error = new Error(`Invalid product type. Must be one of: ${validTypes.join(', ')}`)
+    // Validate product_type (accepts legacy aliases and normalizes them)
+    if (data.productType && !this._isAcceptedProductType(data.productType)) {
+      const error = new Error('Invalid product type. Must be one of: book, clothes, electronics')
       error.statusCode = 400
       throw error
     }
 
-    const raw = await productRepository.create({
+    // Factory Method: create concrete product subtype through common interface.
+    const product = ProductFactory.create(normalizeProductType(data.productType), {
       ...data,
-      createdBy: userId,
+      productType: normalizeProductType(data.productType),
     })
+
+    const raw = await productRepository.create(this._toCreatePayload(product, userId))
 
     return ProductFactory.create(raw.productType, raw).toJSON()
   }
@@ -109,12 +129,13 @@ class ProductService {
 
     // Validate product_type if changed
     if (data.productType) {
-      const validTypes = Object.values(ProductType)
-      if (!validTypes.includes(data.productType)) {
-        const error = new Error(`Invalid product type. Must be one of: ${validTypes.join(', ')}`)
+      if (!this._isAcceptedProductType(data.productType)) {
+        const error = new Error('Invalid product type. Must be one of: book, clothes, electronics')
         error.statusCode = 400
         throw error
       }
+
+      data.productType = normalizeProductType(data.productType)
     }
 
     const raw = await productRepository.update(productId, {
