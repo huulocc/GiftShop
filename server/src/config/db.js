@@ -8,20 +8,29 @@ const { Pool } = require('pg')
  *   - Connection string is read from DATABASE_URL in .env
  *   - SSL is required by Supabase; rejectUnauthorized: false handles self-signed certs in dev
  */
+const connectionString = process.env.DATABASE_URL
+const dbSslEnv = (process.env.DB_SSL || '').toLowerCase()
+const isSupabaseConnection = /supabase\.com/.test(connectionString || '')
+const useSsl = dbSslEnv ? dbSslEnv === 'true' : isSupabaseConnection
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false, // Required for Supabase pooler
-  },
+  connectionString,
+  ...(useSsl
+    ? {
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      }
+    : {}),
 })
 
 // Test the connection on startup
 pool.connect((err, client, release) => {
   if (err) {
-    console.error('[DB] Failed to connect to Supabase:', err.message)
+    console.error('[DB] Failed to connect to database:', err.message)
     return
   }
-  console.log('[DB] Connected to Supabase (transaction pooler) ✓')
+  console.log('[DB] Connected to database ✓')
   release()
 })
 
