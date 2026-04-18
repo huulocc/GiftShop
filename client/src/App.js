@@ -17,6 +17,7 @@ import CompareTray from './components/compare/CompareTray';
 import ProductDetailPage from './components/products/ProductDetailPage/ProductDetailPage';
 import { AuthProvider } from './services/AuthContext';
 import { CompareProvider } from './contexts/CompareContext';
+import { CheckoutProvider } from './contexts/CheckoutContext';
 
 import React from 'react'
 
@@ -25,25 +26,27 @@ function App() {
     <Router>
       <AuthProvider>
         <CompareProvider>
-          <div className="App">
-            <Header/>
-            <Routes>
-              <Route path="/" element={<Home/>}/>
-              <Route path="contact" element={<ContactUs/>}/>
-              <Route path="orders" element={<CreateOrderPage/>}/>
-              <Route path="cart" element={<CartPage/>}/>
-              <Route path="login" element={<LoginPage/>}/>
-              <Route path="register" element={<RegisterPage/>}/>
-              <Route path="manager" element={<ManagerDashboard/>}/>
-              <Route path="profile" element={<ProfilePage/>}/>
-              <Route path="search" element={<SearchResults/>}/>
-              <Route path="about-us" element={<AboutUs/>}/>
-              <Route path="compare" element={<ComparePage/>}/>
-              <Route path="product/:id" element={<ProductDetailPage/>}/>
-            </Routes>
-            <CompareTray />
-            <FooterMain/>
-          </div>
+          <CheckoutProvider>
+            <div className="App">
+              <Header />
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="contact" element={<ContactUs />} />
+                <Route path="orders" element={<CreateOrderPage />} />
+                <Route path="cart" element={<CartPage />} />
+                <Route path="login" element={<LoginPage />} />
+                <Route path="register" element={<RegisterPage />} />
+                <Route path="manager" element={<ManagerDashboard />} />
+                <Route path="profile" element={<ProfilePage />} />
+                <Route path="search" element={<SearchResults />} />
+                <Route path="about-us" element={<AboutUs />} />
+                <Route path="compare" element={<ComparePage />} />
+                <Route path="product/:id" element={<ProductDetailPage />} />
+              </Routes>
+              <CompareTray />
+              <FooterMain />
+            </div>
+          </CheckoutProvider>
         </CompareProvider>
       </AuthProvider>
     </Router>
