@@ -732,6 +732,98 @@
 }
 
 /* ══════════════════════════════════════
+   DISCOUNT SECTION
+══════════════════════════════════════ */
+.discount-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.discount-input-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+
+  .form-field--inline {
+    flex: 1;
+    margin-bottom: 0;
+  }
+}
+
+.btn-secondary {
+  padding: 0.875rem 1.5rem;
+  border-radius: $radius-md;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: $surface;
+  border: 1.5px solid $border;
+  color: $text-secondary;
+  height: 100%;
+
+  &:hover {
+    background: $primary-light;
+    border-color: $primary;
+    color: $primary;
+  }
+
+  &.btn-remove-discount {
+    border-color: rgba($danger, 0.4);
+    color: $danger;
+
+    &:hover {
+      background: $danger-light;
+      border-color: $danger;
+    }
+  }
+}
+
+.discount-msg {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-top: 0.25rem;
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &.success {
+    color: $success;
+  }
+
+  &.error {
+    color: $danger;
+  }
+}
+
+.discount-row, .discount-label {
+  color: $success !important;
+}
+
+.discount-amount {
+  color: $success !important;
+}
+
+.discount-desc {
+  font-size: 0.7rem;
+  font-weight: normal;
+  color: $success;
+  margin-top: 0.2rem;
+  display: block;
+}
+
+.final-total-row td {
+  padding-top: 0.5rem !important;
+  border-top: 1px dashed $border-light;
+}
+
+/* ══════════════════════════════════════
    PAYMENT RADIO CARDS
 ══════════════════════════════════════ */
 .payment-grid {

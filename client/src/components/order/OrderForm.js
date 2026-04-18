@@ -5,6 +5,7 @@ import paymentService from '../../services/paymentService'
 import productService from '../../services/productService'
 import { useAuth } from '../../services/AuthContext'
 import { useCheckout } from '../../contexts/CheckoutContext'
+import { PriceComponent, PercentageDiscount } from '../../patterns/Decorator'
 import './OrderForm.scss'
 
 /**
@@ -54,6 +55,11 @@ function OrderForm({ onOrderCreated }) {
   // ── Options ──────────────────────────────────────────────
   const [giftMessage, setGiftMessage] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('credit_card')
+
+  // ── Discount ─────────────────────────────────────────────
+  const [discountCodeInput, setDiscountCodeInput] = useState('')
+  const [appliedDiscount, setAppliedDiscount] = useState(null)
+  const [discountMessage, setDiscountMessage] = useState('')
 
   // ── UI state ─────────────────────────────────────────────
   const [errors, setErrors] = useState([])
@@ -209,6 +215,39 @@ function OrderForm({ onOrderCreated }) {
     )
   }
 
+  // ── Discount Logic ─────────────────────────────────────────
+  const subtotalBeforeDiscount = useMemo(() => {
+    return selectedItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  }, [selectedItems])
+
+  const handleApplyDiscount = () => {
+    const code = discountCodeInput.trim()
+
+    // Logic gỡ mã (Remove mode)
+    if (appliedDiscount) {
+      setAppliedDiscount(null)
+      setDiscountCodeInput('')
+      setDiscountMessage('Discount removed.')
+      return
+    }
+
+    // Validate apply
+    if (!code) {
+      setDiscountMessage('Please enter a valid code.')
+      return
+    }
+
+    // Áp dụng logic threshold xác định
+    if (subtotalBeforeDiscount < 50) {
+      setDiscountMessage('Subtotal must be at least $50 to apply discounts.')
+      setAppliedDiscount(null)
+      return
+    }
+
+    setAppliedDiscount(code)
+    setDiscountMessage('Code applied successfully!')
+  }
+
   // ── Validation ────────────────────────────────────────────
   const validate = () => {
     const errs = []
@@ -225,6 +264,31 @@ function OrderForm({ onOrderCreated }) {
     return errs
   }
 
+  // ── Discount Calculation ──────────────────────────────────
+  const { finalDiscountAmount, finalDiscountCode, finalDiscountPercentage, finalDiscountDescription } = useMemo(() => {
+    let finalDiscountAmount = 0
+    let finalDiscountCode = ''
+    let finalDiscountPercentage = 0
+    let finalDiscountDescription = ''
+
+    if (appliedDiscount) {
+      let priceCalc = new PriceComponent(subtotalBeforeDiscount)
+
+      if (subtotalBeforeDiscount >= 200) finalDiscountPercentage = 25
+      else if (subtotalBeforeDiscount >= 100) finalDiscountPercentage = 12
+      else if (subtotalBeforeDiscount >= 50) finalDiscountPercentage = 5
+
+      if (finalDiscountPercentage > 0) {
+        priceCalc = new PercentageDiscount(priceCalc, finalDiscountPercentage, appliedDiscount)
+        finalDiscountAmount = subtotalBeforeDiscount - priceCalc.getPrice()
+        finalDiscountCode = appliedDiscount
+        finalDiscountDescription = priceCalc.getDescription()
+      }
+    }
+
+    return { finalDiscountAmount, finalDiscountCode, finalDiscountPercentage, finalDiscountDescription }
+  }, [subtotalBeforeDiscount, appliedDiscount])
+
   // ── Live order preview ────────────────────────────────────
   const orderPreview = useMemo(() => {
     const builder = new OrderBuilder()
@@ -237,8 +301,13 @@ function OrderForm({ onOrderCreated }) {
       .setItems(selectedItems)
       .setGiftMessage(giftMessage)
       .setPaymentMethod(paymentMethod)
+      .setDiscountAmount(finalDiscountAmount)
+      .setDiscountCode(finalDiscountCode)
       .getPreview()
-  }, [customerId, customerName, email, phone, street, city, state, zipCode, selectedItems, giftMessage, paymentMethod])
+  }, [
+    customerId, customerName, email, phone, street, city, state, zipCode,
+    selectedItems, giftMessage, paymentMethod, finalDiscountAmount, finalDiscountCode
+  ])
 
   // ── Form submission ───────────────────────────────────────
   const handleSubmit = async (e) => {
@@ -266,6 +335,8 @@ function OrderForm({ onOrderCreated }) {
         .setItems(selectedItems)
         .setGiftMessage(giftMessage)
         .setPaymentMethod(paymentMethod)
+        .setDiscountAmount(finalDiscountAmount)
+        .setDiscountCode(finalDiscountCode)
         .build()
 
       const result = await orderService.createOrder(orderPayload)
@@ -294,6 +365,9 @@ function OrderForm({ onOrderCreated }) {
         setGiftMessage('')
         setPaymentMethod('credit_card')
         setProductSearch('')
+        setDiscountCodeInput('')
+        setAppliedDiscount(null)
+        setDiscountMessage('')
 
         setSuccessMsg(`Order ${createdOrder?.orderNumber || ''} created successfully!`)
         setTimeout(() => setSuccessMsg(''), 5000)
@@ -756,12 +830,75 @@ function OrderForm({ onOrderCreated }) {
                   </tbody>
                   <tfoot>
                     <tr>
+                      <td colSpan="3" className="total-label">Subtotal</td>
+                      <td className="total-amount">${subtotalBeforeDiscount.toFixed(2)}</td>
+                      <td></td>
+                    </tr>
+                    {finalDiscountAmount > 0 && (
+                      <tr>
+                        <td colSpan="3" className="total-label discount-label">
+                          Discount ({finalDiscountPercentage}% OFF)
+                          <div className="discount-desc">{finalDiscountDescription}</div>
+                        </td>
+                        <td className="total-amount discount-amount">-${finalDiscountAmount.toFixed(2)}</td>
+                        <td></td>
+                      </tr>
+                    )}
+                    <tr className="final-total-row">
                       <td colSpan="3" className="total-label">Order Total</td>
                       <td className="total-amount">${orderPreview.totalAmount.toFixed(2)}</td>
                       <td></td>
                     </tr>
                   </tfoot>
                 </table>
+              </div>
+            )}
+          </div>
+
+          {/* ── Section 3.5: Discount Code ── */}
+          <div className="form-section discount-section">
+            <div className="form-section-header">
+              <div className="form-section-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
+                </svg>
+              </div>
+              <div>
+                <h3 className="form-section-title">Discount Code</h3>
+                <p className="form-section-subtitle">Apply a promo code to get discounts (orders over $50, $100, $200 qualify)</p>
+              </div>
+            </div>
+            
+            <div className="discount-input-group">
+              <div className="form-field form-field--inline">
+                <input 
+                  id="discountCode"
+                  type="text" 
+                  className="form-input"
+                  placeholder=" " 
+                  value={discountCodeInput}
+                  onChange={(e) => setDiscountCodeInput(e.target.value)}
+                  disabled={appliedDiscount !== null} 
+                />
+                <label className="form-label" htmlFor="discountCode">Enter promo code</label>
+              </div>
+              <button 
+                type="button" 
+                className={`btn btn-secondary ${appliedDiscount ? 'btn-remove-discount' : ''}`}
+                onClick={handleApplyDiscount}
+              >
+                {appliedDiscount ? "Remove" : "Apply"}
+              </button>
+            </div>
+            
+            {discountMessage && (
+              <div className={`discount-msg ${appliedDiscount ? 'success' : 'error'}`}>
+                {appliedDiscount ? (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                )}
+                <span>{discountMessage}</span>
               </div>
             )}
           </div>

@@ -15,6 +15,8 @@ class OrderBuilder {
     this._items = []
     this._giftMessage = ''
     this._paymentMethod = ''
+    this._discountAmount = 0
+    this._discountCode = ''
   }
 
   setCustomerId(id) {
@@ -77,11 +79,22 @@ class OrderBuilder {
     return this
   }
 
+  setDiscountAmount(amount) {
+    this._discountAmount = parseFloat(amount) || 0
+    return this
+  }
+
+  setDiscountCode(code) {
+    this._discountCode = code
+    return this
+  }
+
   /**
    * Calculate total from items
    */
   getTotal() {
-    return this._items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+    const subtotal = this._items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+    return Math.max(0, subtotal - this._discountAmount)
   }
 
   /**
@@ -94,6 +107,8 @@ class OrderBuilder {
       phone: this._phone,
       shippingAddress: { ...this._shippingAddress },
       items: [...this._items],
+      subtotalAmount: this._items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+      discountAmount: this._discountAmount,
       totalAmount: this.getTotal(),
       giftMessage: this._giftMessage,
       paymentMethod: this._paymentMethod,
@@ -113,6 +128,8 @@ class OrderBuilder {
       items: [...this._items],
       giftMessage: this._giftMessage,
       paymentMethod: this._paymentMethod,
+      discountAmount: this._discountAmount,
+      discountCode: this._discountCode,
     }
   }
 }
